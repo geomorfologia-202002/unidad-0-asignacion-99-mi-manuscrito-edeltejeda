@@ -1,0 +1,103 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse=TRUE,
+  eval = T
+)
+```
+
+
+```{r, include=FALSE}
+source(
+  knitr::purl(
+    'intro-rgrass.Rmd',
+    output=tempfile()
+  )
+)
+```
+
+## Proceso 0
+```{r}
+#Quité el paquete rgrass7, porque ya se carga al ejecutar el script intro-rgrass.Rmd
+library(sf)
+library(raster)
+library(sp)
+```
+
+
+## Definir proyección basado en una fuente externa, en este caso, el DEM MERIT
+
+
+```{r}
+gmeta()
+dem <- 'data/dem.tif'
+#Definir la proyección de la región basada en DEM
+execGRASS(
+  cmd = 'g.proj',
+  flags = c('t','c'),
+  georef=dem)
+gmeta()
+```
+
+## Importar mapa raster
+
+```{r}
+execGRASS(
+  cmd = 'r.in.gdal',
+  flags=c('overwrite','quiet'),
+  parameters=list(
+    input=dem,
+    output='dem'
+  )
+)
+```
+
+## Actualizar la extensión de la región al DEM, sólo por precaución
+
+```{r}
+execGRASS(
+  cmd = 'g.region',
+  parameters=list(
+    raster = 'dem',
+    align = 'dem'
+  )
+)
+```
+
+## Mostrar la definición de la región
+
+```{r}
+gmeta()
+```
+
+## Para completar, importar un mapa vectorial también
+
+```{r}
+demext <- 'data/dem-extension.geojson'
+execGRASS(
+  cmd = 'v.in.ogr',
+  flags=c('overwrite','quiet'),
+  parameters=list(
+    input=demext,
+    output='dem_extent'
+  )
+)
+
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+
+source('borrar_mascara_si_la_hubiere.R')
+unlink_.gislock()
+```

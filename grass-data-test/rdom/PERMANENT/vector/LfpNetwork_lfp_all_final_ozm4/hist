@@ -1,0 +1,11 @@
+COMMAND: v.patch --overwrite input="LfpNetwork_lfp_ozm4,LfpNetwork_lfp_tmp_all_tributaries_ozm4" output="LfpNetwork_lfp_all_final_ozm4"
+GISDBASE: /home/edelte/unidad-0-asignacion-99-mi-manuscrito-edeltejeda/grass-data-test
+LOCATION: rdom MAPSET: PERMANENT USER: edelte DATE: Tue Dec 29 17:35:57 2020
+---------------------------------------------------------------------------------
+COMMAND: v.category --overwrite input="LfpNetwork_lfp_all_final_ozm4" layer="1" type="point,line,centroid,face" output="LfpNetwork_lfp_tmp_ozm4all_final_" option="del" cat=-1 step=1
+GISDBASE: /home/edelte/unidad-0-asignacion-99-mi-manuscrito-edeltejeda/grass-data-test
+LOCATION: rdom MAPSET: PERMANENT USER: edelte DATE: Tue Dec 29 17:35:57 2020
+---------------------------------------------------------------------------------
+COMMAND: v.category --overwrite input="LfpNetwork_lfp_tmp_ozm4all_final_" layer="1" type="point,line,centroid,face" output="LfpNetwork_lfp_all_final_ozm4" option="add" cat=1 step=1
+GISDBASE: /home/edelte/unidad-0-asignacion-99-mi-manuscrito-edeltejeda/grass-data-test
+LOCATION: rdom MAPSET: PERMANENT USER: edelte DATE: Tue Dec 29 17:35:57 2020

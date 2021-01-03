@@ -1,0 +1,104 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+### Extraer una cuenca de drenaje con r.water.outlet. Visualizar con mapview y leaflet
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse=TRUE,
+  eval = T
+)
+options(knitr.duplicate.label = "allow")
+
+```
+
+```{r, include=FALSE}
+source(
+  knitr::purl(
+    'Calcular parámetros hidrográficos con r watershed Visualizar con leaflet cuen propia.Rmd',
+    output=tempfile()
+  )
+)
+knitr::opts_chunk$set(fig.path = "img/basinoutlet/")
+```
+
+## Obtener las coordenadas de la desembocadura de la cuenca de interés
+
+```{r}
+library(mapview)
+red_de_r_watershed <- mapview(
+  stream3857, method='ngb', col.regions = 'blue',
+  legend = FALSE, label = FALSE, maxpixels =  1801674
+)#Los cursos fluviales no aparecen continuos, porque no imprime los rásters completamente
+red_de_r_watershed
+red_de_r_watershed %>% mapview::mapshot(file = 'red_de_r_wshed_salida.png')
+```
+
+## Convertir las coordenadas lat/lon a EPSG:32619
+
+```{r}
+my_trans <- function(coords = NULL) {
+  require(sp)
+  pt <- SpatialPoints(matrix(coords, ncol = 2), CRS("+init=epsg:4326"))
+  foo <- spTransform(pt, CRSobj = CRS("+init=epsg:32619"))
+  bar <- as.vector(coordinates(foo))
+  return(bar)
+}
+ozama_out <- my_trans(coords = c(-69.88087,18.47427))
+ozama_out
+```
+
+## Extraer la cuenca de interés
+
+```{r}
+execGRASS(
+  "r.water.outlet",
+  flags = c('overwrite','quiet'),
+  parameters = list(
+    input = 'drainage-dir-de-rwshed',
+    output = 'ozama-basin',
+    coordinates = ozama_out
+  )
+)
+```
+
+## Convertir la cuenca a vectorial en GRASS
+
+```{r}
+execGRASS(
+  "r.to.vect",
+  flags = c('overwrite','quiet'),
+  parameters = list(
+    input = 'ozama-basin',
+    output = 'ozama_basin',
+    type = 'area'
+  )
+)
+```
+
+## Traer a R la cuenca del Cuenca Ozama
+
+```{r}
+ozama_bas <- readVECT('ozama_basin')
+ozama_bas
+plot(ozama_bas)
+ozama_bas4326 <- spTransform(ozama_bas, CRSobj = CRS("+init=epsg:4326"))
+ozama_bas4326_leaf <- leaflet() %>% 
+  addProviderTiles(providers$Stamen.Terrain) %>%
+  addRasterImage(stream, opacity = 0.7, method = 'ngb', colors = 'blue') %>% 
+  addPolygons(data = ozama_bas4326) %>% 
+  leafem::addHomeButton(extent(ozama_bas4326), 'Ver cuenca')
+ozama_bas4326_leaf
+ozama_bas4326_leaf %>% mapview::mapshot(file = 'ozama_bas4326_salida.png')
+```
+
+## Limpiar archivo de bloqueo del conjunto de mapas de GRASS. Quitar máscara, si la hubiere
+
+```{r}
+source('borrar_mascara_si_la_hubiere.R')
+unlink_.gislock()
+```

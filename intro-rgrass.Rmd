@@ -1,0 +1,25 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Paquetes
+
+```{r,eval=FALSE}
+library(rgrass7)
+```
+
+## Región de GRASS
+
+```{r,eval=FALSE}
+gisdbase <- 'grass-data-test' #Base de datos de GRASS GIS
+wd <- getwd() #Directorio de trabajo
+wd
+loc <- initGRASS(gisBase = "/usr/lib/grass78/",
+                 home = wd,
+                 gisDbase = paste(wd, gisdbase, sep = '/'),
+                 location = 'rdom',
+                 mapset = "PERMANENT",
+                 override = TRUE)
+```

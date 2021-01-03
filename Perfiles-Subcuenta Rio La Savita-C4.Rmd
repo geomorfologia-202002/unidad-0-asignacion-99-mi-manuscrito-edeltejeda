@@ -1,0 +1,149 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+### Calcular índices de concavidad y perfiles longitudinales de cursos fluviales
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse=TRUE,
+  eval = T
+)
+options(knitr.duplicate.label = "allow")
+```
+
+```{r, include=FALSE}
+source(
+  knitr::purl(
+    'orden-de-red.Rmd',
+    output=tempfile()
+  )
+)
+knitr::opts_chunk$set(fig.path = "img/profilesconcav/")
+```
+
+## Imprimir lista de mapas ráster y vectoriales dentro en la región/localización activa
+
+
+```{r}
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+
+## Obtener coordenada
+
+```{r}
+mapview(order, col.regions = 'blue', legend = FALSE)
+```
+
+## Obtener cursos más largos (cargar función propia)
+
+```{r, results='hide', warning=FALSE, message=FALSE}
+devtools::source_url('https://raw.githubusercontent.com/geofis/rgrass/master/lfp_network.R') #Cargada como función "LfpNetwork"
+LfpNetwork(
+  xycoords = my_trans(c(-69.82221,18.66188)),
+  suffix = 'ozm4',
+  stream_vect = 'order_all',
+  direction = 'drainage-dir-de-rstr'
+)
+```
+
+## Imprimir lista de mapas ráster y vectoriales
+
+```{r}
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+
+## Representar con leaflet
+
+```{r, results='hide', warning=FALSE, message=FALSE}
+lfp <- readVECT('LfpNetwork_lfp_all_final_ozm4')
+```
+
+```{r}
+lfp4326 <- spTransform(lfp, CRSobj = CRS("+init=epsg:4326"))
+lfp_con_id <- leaflet() %>%
+  addProviderTiles(providers$Stamen.Terrain, group = 'terrain') %>%
+  addPolylines(
+    data = lfp4326, weight = 3, opacity = 0.7, group = 'order',
+    label = ~as.character(cat),
+    highlightOptions = highlightOptions(color = "white",
+                                      weight = 5, bringToFront = F, opacity = 1),
+    labelOptions = labelOptions(noHide = T,
+                                style = list(
+                                  "font-size" = "8px",
+                                  "background" = "rgba(255, 255, 255, 0.5)",
+                                  "background-clip" = "padding-box",
+                                  "padding" = "1px"))) %>% 
+  leafem::addHomeButton(extent(lfp4326), 'Ver todo')
+lfp_con_id
+lfp_con_id %>% mapview::mapshot(file = 'lfp_con_id_salida.png')
+```
+
+## Exportar a KML
+
+```{r, results='hide', warning=FALSE, message=FALSE}
+execGRASS(
+  'v.out.ogr',
+  flags = c('overwrite','quiet'),
+  parameters = list(
+    input = 'LfpNetwork_lfp_all_final_ozm4',
+    output = 'lfp_ozm_kml.kml4',
+    format = 'KML',
+    dsco = 'NameField=cat'
+  )
+)
+```
+
+## Obtención de perfiles longitudinales e índices de concavidad
+
+```{r, results='hide', warning=FALSE, message=FALSE}
+source('lfp_profiles_concavity.R') #Cargado como función "LfpProfilesConcavity"
+ozama_conv_prof <- LfpProfilesConcavity(
+  xycoords = my_trans(c(-69.82221,18.66188)),
+  network = 'LfpNetwork_lfp_all_final_ozm4',
+  prefix = 'Oz',
+  dem = 'dem',
+  direction = 'drainage-dir-de-rstr',
+  crs = '+init=epsg:32619',
+  smns = 0.5,
+  nrow = 5)
+```
+
+## Mostrar resultados
+
+```{r}
+ozama_conv_prof$profiles
+ozama_conv_prof$concavityindex
+ozama_conv_prof$dimensionlessprofiles$layers[[2]]$aes_params$size <- 2
+ozama_conv_prof$dimensionlessprofiles$theme$text$size <- 12
+ozama_conv_prof$dimensionlessprofiles
+```
+
+## Tabla dx/dy, tanto en metros como adimensional. Útiles para construir perfiles por cuenta propia
+
+```{r}
+ozama_conv_prof$lengthzdata %>% tibble::as.tibble()
+ozama_conv_prof$lengthzdatadmnls %>% tibble::as.tibble()
+```
+
+
+## Limpiar archivo de bloqueo del conjunto de mapas de GRASS
+
+```{r}
+unlink_.gislock()
+```
