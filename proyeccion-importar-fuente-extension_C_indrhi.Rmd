@@ -1,0 +1,135 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse=TRUE,
+  eval = T
+)
+```
+
+
+```{r, include=FALSE}
+source(
+  knitr::purl(
+    'intro-rgrass.Rmd',
+    output=tempfile()
+  )
+)
+```
+
+
+
+```{r}
+## Proceso 0
+library(sf)
+library(raster)
+library(sp)
+
+
+
+
+## Tercero (Ruta del Dem en objeto)
+
+dem <- 'data/dem.tif'
+
+## Cuarto (Definir Proyecccion y Extencion de la Region con el Dem)
+execGRASS(
+  cmd = 'g.proj',
+  flags = c('t','c'),
+  georef=dem)
+gmeta()
+
+## Quinto (Importa dem a Grass y su extension)
+execGRASS(
+  cmd = 'r.in.gdal',
+  flags=c('overwrite','quiet'),
+  parameters=list(
+    input=dem,
+    output='dem'
+  )
+)
+
+## Extension
+demext <- 'data/dem-extension.geojson'
+execGRASS(
+  cmd = 'v.in.ogr',
+  flags=c('overwrite','quiet'),
+  parameters=list(
+    input=demext,
+    output='dem_extent'
+  )
+)
+
+
+
+## Sexto (Actualizar la region)
+
+execGRASS(
+  cmd = 'g.region',
+  parameters=list(
+    raster = 'dem',
+    align = 'dem'
+  )
+)
+
+
+## Octavo (Paquete SP para representar como un Raster de R)
+
+use_sp()
+dem_sp <- readRAST('dem')
+
+## Noveno (Guardar parametros gaficos y plotear dem)
+op <- par()
+```
+```{r}
+######################################################
+
+
+ruta_cuenca_ozama <- 'data/cuenca_ozama_indrhi.geojson'
+c_ozama <- st_read(ruta_cuenca_ozama)
+
+dem_r0 <- raster(dem_sp)
+
+dem_r1 <- crop(dem_r0, c_ozama)
+
+dem_ozama <- mask(dem_r1, c_ozama)
+
+pend_ozama <- terrain(x = dem_ozama, opt = 'slope', unit = 'degrees')
+
+
+execGRASS(
+  cmd = 'v.in.ogr',
+  flags=c('overwrite','quiet'),
+  parameters=list(
+    input=ruta_cuenca_ozama,
+    output='c_ozama_indrhi'
+  )
+)
+
+execGRASS(
+  "r.mask",
+  flags = c('verbose','overwrite','quiet'),
+  parameters = list(
+    vector = 'c_ozama_indrhi'
+  )
+)
+
+
+## mostrar raster vector
+
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+
+source('borrar_mascara_si_la_hubiere.R')
+unlink_.gislock()
+```

@@ -1,0 +1,1199 @@
+# *Script* reproducible
+
+
+## Paquetes
+
+```{r,eval=FALSE}
+library(rgrass7)
+```
+
+## Región de GRASS
+
+```{r,eval=FALSE}
+gisdbase <- 'grass-data-test' #Base de datos de GRASS GIS
+wd <- getwd() #Directorio de trabajo
+wd
+loc <- initGRASS(gisBase = "/usr/lib/grass78/",
+                 home = wd,
+                 gisDbase = paste(wd, gisdbase, sep = '/'),
+                 location = 'rdom',
+                 mapset = "PERMANENT",
+                 override = TRUE)
+```
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r,eval=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse=TRUE,
+  eval = T
+)
+```
+
+
+```{r,eval=FALSE}
+source(
+  knitr::purl(
+    'intro-rgrass.Rmd',
+    output=tempfile()
+  )
+)
+```
+
+## Proceso 0
+```{r,eval=FALSE}
+#Quité el paquete rgrass7, porque ya se carga al ejecutar el script intro-rgrass.Rmd
+library(sf)
+library(raster)
+library(sp)
+```
+
+
+## Definir proyección basado en una fuente externa, en este caso, el DEM MERIT
+
+
+```{r,eval=FALSE}
+gmeta()
+dem <- 'data/dem.tif'
+#Definir la proyección de la región basada en DEM
+execGRASS(
+  cmd = 'g.proj',
+  flags = c('t','c'),
+  georef=dem)
+gmeta()
+```
+
+## Importar mapa raster
+
+```{r,eval=FALSE}
+execGRASS(
+  cmd = 'r.in.gdal',
+  flags=c('overwrite','quiet'),
+  parameters=list(
+    input=dem,
+    output='dem'
+  )
+)
+```
+
+## Actualizar la extensión de la región al DEM, sólo por precaución
+
+```{r,eval=FALSE}
+execGRASS(
+  cmd = 'g.region',
+  parameters=list(
+    raster = 'dem',
+    align = 'dem'
+  )
+)
+```
+
+## Mostrar la definición de la región
+
+```{r,eval=FALSE}
+gmeta()
+```
+
+## Para completar, importar un mapa vectorial también
+
+```{r,eval=FALSE}
+demext <- 'data/dem-extension.geojson'
+execGRASS(
+  cmd = 'v.in.ogr',
+  flags=c('overwrite','quiet'),
+  parameters=list(
+    input=demext,
+    output='dem_extent'
+  )
+)
+
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+
+source('borrar_mascara_si_la_hubiere.R')
+unlink_.gislock()
+```
+
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+#title: "Calcular parámetros hidrográficos con r.watershed. Visualizar con leaflet"
+
+```{r,eval=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse=TRUE,
+  eval = T
+)
+options(knitr.duplicate.label = "allow")
+```
+
+
+## ejecutar Scrit anteriores
+
+```{r,eval=FALSE}
+source(
+  knitr::purl(
+    'proyeccion-importar-fuente-extension_C_Propia.Rmd',
+    output=tempfile()
+  )
+)
+knitr::opts_chunk$set(fig.path = "img/calcwshed/")
+```
+
+## `g.list`
+
+```{r,eval=FALSE}
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+
+## Calcular parámetros hidrográficos de interés usando `r.watershed`
+
+```{r,eval=FALSE}
+execGRASS(
+  "r.watershed",
+  flags = c('overwrite','quiet'),
+  parameters = list(
+    elevation = "dem",
+    accumulation = "accum-de-rwshed",
+    stream = "stream-de-rwshed",
+    drainage = "drainage-dir-de-rwshed",
+    basin = 'basins',
+    half_basin = 'half-basins',
+    threshold = 80
+  )
+)
+```
+
+
+## Traer capas a R
+
+```{r,eval=FALSE}
+# Usar Spatial 
+library(sp)
+use_sp()
+#Paquete manejo de los raster
+library(raster)
+#DEM
+dem <- raster(readRAST('dem'))
+#Basins
+basins <- raster(readRAST('basins'))
+#Stream network
+stream <- raster(readRAST('stream-de-rwshed'))
+stream3857 <- projectRaster(stream, crs = CRS("+init=epsg:3857"), method = 'ngb')
+#Generar un vectorial de extensión de capa en EPSG:4326
+e <- extent(stream)
+e <- as(e, 'SpatialPolygons')
+proj4string(e) <- CRS("+init=epsg:32619")
+e <- spTransform(e, CRSobj = CRS("+init=epsg:4326"))
+```
+
+
+## Visualizar capas con `leaflet`
+
+```{r,eval=FALSE}
+library(leaflet)
+library(leafem)
+r_wshed_salida <- leaflet() %>%
+  addProviderTiles(providers$Stamen.Terrain, group = 'terrain') %>%
+  addRasterImage(dem, group='DEM', opacity = 0.5) %>%
+  addRasterImage(
+    ratify(basins),
+    group='basins', opacity = 0.7,
+    colors = sample(rep(RColorBrewer::brewer.pal(12, 'Set3'),1000))) %>% 
+  addRasterImage(stream3857, project = F, group='str', opacity = 0.7, method = 'ngb', colors = 'blue') %>% 
+  addLayersControl(
+    overlayGroups = c('terrain','DEM','basins','str'),
+    options = layersControlOptions(collapsed=FALSE)) %>% 
+  addHomeButton(extent(e), 'Ver todo')
+r_wshed_salida
+#La siguiente línea toma una captura de este mapa (toma tiempo, paciencia)
+r_wshed_salida %>% mapview::mapshot(file = 'r_wshed_salida.png')
+```
+
+## Limpiar archivo de bloqueo del conjunto de mapas de GRASS. Quitar máscara, si la hubiere
+
+```{r,eval=FALSE}
+source('borrar_mascara_si_la_hubiere.R')
+unlink_.gislock()
+```
+
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+### Extraer una cuenca de drenaje con r.water.outlet. Visualizar con mapview y leaflet
+
+```{r,eval=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse=TRUE,
+  eval = T
+)
+options(knitr.duplicate.label = "allow")
+
+```
+
+```{r,eval=FALSE}
+source(
+  knitr::purl(
+    'Calcular parámetros hidrográficos con r watershed Visualizar con leaflet cuen propia.Rmd',
+    output=tempfile()
+  )
+)
+knitr::opts_chunk$set(fig.path = "img/basinoutlet/")
+```
+
+## Obtener las coordenadas de la desembocadura de la cuenca de interés
+
+```{r,eval=FALSE}
+library(mapview)
+red_de_r_watershed <- mapview(
+  stream3857, method='ngb', col.regions = 'blue',
+  legend = FALSE, label = FALSE, maxpixels =  1801674
+)#Los cursos fluviales no aparecen continuos, porque no imprime los rásters completamente
+red_de_r_watershed
+red_de_r_watershed %>% mapview::mapshot(file = 'red_de_r_wshed_salida.png')
+```
+
+## Convertir las coordenadas lat/lon a EPSG:32619
+
+```{r,eval=FALSE}
+my_trans <- function(coords = NULL) {
+  require(sp)
+  pt <- SpatialPoints(matrix(coords, ncol = 2), CRS("+init=epsg:4326"))
+  foo <- spTransform(pt, CRSobj = CRS("+init=epsg:32619"))
+  bar <- as.vector(coordinates(foo))
+  return(bar)
+}
+ozama_out <- my_trans(coords = c(-69.88087,18.47427))
+ozama_out
+```
+
+## Extraer la cuenca de interés
+
+```{r,eval=FALSE}
+execGRASS(
+  "r.water.outlet",
+  flags = c('overwrite','quiet'),
+  parameters = list(
+    input = 'drainage-dir-de-rwshed',
+    output = 'ozama-basin',
+    coordinates = ozama_out
+  )
+)
+```
+
+## Convertir la cuenca a vectorial en GRASS
+
+```{r,eval=FALSE}
+execGRASS(
+  "r.to.vect",
+  flags = c('overwrite','quiet'),
+  parameters = list(
+    input = 'ozama-basin',
+    output = 'ozama_basin',
+    type = 'area'
+  )
+)
+```
+
+## Traer a R la cuenca del Cuenca Ozama
+
+```{r,eval=FALSE}
+ozama_bas <- readVECT('ozama_basin')
+ozama_bas
+plot(ozama_bas)
+ozama_bas4326 <- spTransform(ozama_bas, CRSobj = CRS("+init=epsg:4326"))
+ozama_bas4326_leaf <- leaflet() %>% 
+  addProviderTiles(providers$Stamen.Terrain) %>%
+  addRasterImage(stream, opacity = 0.7, method = 'ngb', colors = 'blue') %>% 
+  addPolygons(data = ozama_bas4326) %>% 
+  leafem::addHomeButton(extent(ozama_bas4326), 'Ver cuenca')
+ozama_bas4326_leaf
+ozama_bas4326_leaf %>% mapview::mapshot(file = 'ozama_bas4326_salida.png')
+```
+
+## Limpiar archivo de bloqueo del conjunto de mapas de GRASS. Quitar máscara, si la hubiere
+
+```{r,eval=FALSE}
+source('borrar_mascara_si_la_hubiere.R')
+unlink_.gislock()
+```
+
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+### "Extraer una red drenaje con r.stream.extract. Visualizar con leaflet"
+
+```{r,eval=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse=TRUE,
+  eval = T
+)
+options(knitr.duplicate.label = "allow")
+```
+
+```{r,eval=FALSE}
+source(
+  knitr::purl(
+    'crear-una-cuenca-con-r-water-outlet.Rmd',
+    output=tempfile()
+  )
+)
+knitr::opts_chunk$set(fig.path = "img/extractnet/")
+```
+
+## Mostrar lista nuevamente
+
+```{r,eval=FALSE}
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+## Usar la cuenca del Ozama como máscara
+```{r,eval=FALSE}
+execGRASS(
+  "r.mask",
+  flags = c('verbose','overwrite','quiet'),
+  parameters = list(
+    vector = 'ozama_basin'
+  )
+)
+```
+
+## Extraer la red de drenaje de la cuenca de interés
+```{r,eval=FALSE}
+execGRASS(
+  "r.stream.extract",
+  flags = c('overwrite','quiet'),
+  parameters = list(
+    elevation = 'dem',
+    threshold = 80,
+    stream_raster = 'ozama-stream-de-rstr',
+    stream_vector = 'ozama_stream_de_rstr'
+  )
+)
+```
+## Traer a R la red de drenaje de la Cuenca Ozama
+
+```{r,eval=FALSE}
+ozama_net <- readVECT('ozama_stream_de_rstr', ignore.stderr = T)
+ozama_net
+plot(ozama_net)
+ozama_net4326 <- spTransform(ozama_net, CRSobj = CRS("+init=epsg:4326"))
+ozama_net4326
+ozama_centroid <- coordinates(rgeos::gCentroid(ozama_bas4326))
+ozama_centroid
+ozama_net_r <- raster(readRAST('ozama-stream-de-rstr'))
+ozama_net_r
+ozama_net_r3857 <- projectRaster(ozama_net_r, crs = CRS("+init=epsg:3857"), method = 'ngb')
+ozama_net_r3857
+red_de_r_stream <- leaflet() %>% 
+  setView(lng = ozama_centroid[1], lat = ozama_centroid[2], zoom = 10) %>%
+  addProviderTiles(providers$Stamen.Terrain, group = 'terrain') %>%
+  addRasterImage(ozama_net_r3857, opacity = 0.7, method = 'ngb', colors = 'grey20', group = 'str_raster') %>% 
+  addPolylines(data = ozama_net4326, weight = 3, opacity = 0.7, group = 'str_vect') %>% 
+  leafem::addHomeButton(extent(ozama_net4326), 'Ver todo') %>% 
+  addLayersControl(
+    overlayGroups = c('terrain','str_vect','str_raster'),
+    options = layersControlOptions(collapsed=FALSE))
+red_de_r_stream
+red_de_r_stream %>% mapview::mapshot(file = 'red_de_r_stream_salida.png')
+```
+
+## Limpiar archivo de bloqueo del conjunto de mapas de GRASS
+
+```{r,eval=FALSE}
+unlink_.gislock()
+```
+
+
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+### "Orden de red, morfometría y análisis hortoniano usando r.stream*"
+
+
+```{r,eval=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse=TRUE,
+  eval = T
+)
+options(knitr.duplicate.label = "allow")
+```
+
+## # ########################
+
+```{r,eval=FALSE}
+source(
+  knitr::purl(
+    'extraer-red-de-drenaje-con-r-stream.Rmd',
+    output=tempfile()
+  )
+)
+knitr::opts_chunk$set(fig.path = "img/streamorder/")
+```
+
+## Imprimir lista de mapas ráster y vectoriales dentro en la región/localización activa
+
+* Nótese que los paquetes requeridos en esta sessión (`rgrass7`, `raster`, `leaflet`, `leafem`), fueron en el bloque anterior al ejecutarse el código contenido en el archivo `extraer-red-de-drenaje-con-r-stream.Rmd`. Igualmente, dicho bloque de código creó todos los objetos necesarios para realizar este tutorial.
+
+```{r,eval=FALSE}
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+
+## Crear mapa de dirección de flujo a partir de r.stream
+
+```{r,eval=FALSE}
+execGRASS(
+  "r.stream.extract",
+  flags = c('overwrite','quiet'),
+  parameters = list(
+    elevation = 'dem',
+    threshold = 80,
+    direction = 'drainage-dir-de-rstr'
+  )
+)
+```
+
+## Crear mapas de órdenes de red
+
+```{r,eval=FALSE}
+execGRASS(
+  "r.stream.order",
+  flags = c('overwrite','quiet'),
+  parameters = list(
+    stream_rast = 'ozama-stream-de-rstr',
+    direction = 'drainage-dir-de-rstr',
+    elevation = 'dem',
+    accumulation = 'accum-de-rwshed',
+    stream_vect = 'order_all',
+    strahler = 'order-strahler',
+    horton = 'order-horton',
+    shreve = 'order-shreve',
+    hack = 'order-hack-gravelius',
+    topo = 'order-topology'
+  )
+)
+```
+
+## Mostrar lista nuevamente
+
+```{r,eval=FALSE}
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+
+## Visualizar la red con leaflet
+
+### Simbología única
+```{r,eval=FALSE}
+   {r, results='hide', warning=FALSE, message=FALSE}
+order <- readVECT('order_all')
+```
+
+```{r,eval=FALSE}
+order4326 <- spTransform(order, CRSobj = CRS("+init=epsg:4326"))
+leaflet() %>% 
+  addProviderTiles(providers$Stamen.Terrain, group = 'terrain') %>%
+  addPolylines(
+    data = order4326, weight = 3, opacity = 0.7, group = 'order',
+    label = ~as.character(strahler),
+    highlightOptions = highlightOptions(color = "white",
+                                      weight = 5, bringToFront = F, opacity = 1),
+    labelOptions = labelOptions(noHide = F,
+                                style = list(
+                                  "font-size" = "8px",
+                                  "background" = "rgba(255, 255, 255, 0.5)",
+                                  "background-clip" = "padding-box",
+                                  "padding" = "1px"))) %>% 
+  leafem::addHomeButton(extent(order4326), 'Ver todo') %>% 
+  addLayersControl(
+    overlayGroups = c('terrain','order'),
+    options = layersControlOptions(collapsed=FALSE))
+```
+
+### Simbología aplicando grosor según orden de red
+
+```{r,eval=FALSE}
+orden_de_red <- leaflet() %>% 
+  addProviderTiles(providers$Stamen.Terrain, group = 'terrain') %>%
+  addPolylines(
+    data = order4326, weight = order4326$strahler*1.5, opacity = 0.7, group = 'order',
+    label = ~as.character(strahler),
+    highlightOptions = highlightOptions(color = "white",
+                                      weight = 5, bringToFront = F, opacity = 1),
+    labelOptions = labelOptions(noHide = F)) %>% 
+  leafem::addHomeButton(extent(order4326), 'Ver todo') %>% 
+  addLayersControl(
+    overlayGroups = c('terrain','order'),
+    options = layersControlOptions(collapsed=FALSE))
+orden_de_red
+orden_de_red %>% mapview::mapshot(file = 'orden_de_red_salida.png')
+```
+
+## Delimitar cuencas según orden de red de Strahler
+
+### Obtener órdenes de red mínimo y máximo
+
+```{r,eval=FALSE}
+#Estadísticas para obtener los valores mínimo y máximo del orden de red de Strahler
+rinfo.ordstra <- execGRASS(
+  'r.info',
+  flags = 'r',
+  parameters = list(
+    map = 'order-strahler'
+  )
+)
+#Órdenes de red mínimo y máximo
+minmaxord <- as.numeric(
+  stringr::str_extract_all(
+    attributes(rinfo.ordstra)$resOut,
+    "[0-9]+"
+  )
+)
+minmaxord
+```
+
+### Delimitar cuencas, convertirlas de ráster a vectorial
+
+```{r,eval=FALSE}
+sapply(
+  min(minmaxord):max(minmaxord),
+  function(x){
+    execGRASS(
+      "r.stream.basins",
+      flags = c('overwrite','c','quiet'),
+      parameters = list(
+        direction = 'drainage-dir-de-rstr',
+        stream_rast = 'order-strahler',
+        cats = as.character(x),
+        basins = paste0('r-stream-basins-',x)
+      )
+    )
+    execGRASS(
+      "r.to.vect",
+      flags=c('overwrite','quiet'),
+      parameters = list(
+         input = paste0('r-stream-basins-',x),
+         output = paste0('r_stream_basins_',x),
+         type = 'area'
+      )
+    )
+  }
+)
+```
+
+### Representar las cuencas con leaflet
+
+```{r,eval=FALSE}
+{r, results='hide', warning=FALSE, message=FALSE}
+sapply(
+  min(minmaxord):max(minmaxord),
+  function(x){
+    assign(
+      paste0('orden', x),
+      spTransform(readVECT(paste0('r_stream_basins_',x),driver = 'SQLite'), CRSobj = CRS("+init=epsg:4326")),
+      envir = .GlobalEnv)
+  }
+)
+```
+
+```{r,eval=FALSE}
+paleta <- RColorBrewer::brewer.pal(12, 'Set3')
+cuencas_y_orden_de_red <- leaflet() %>% 
+  addProviderTiles(providers$Stamen.Terrain, group = 'terrain') %>%
+  addPolygons(data = orden7, stroke = T, weight = 2,
+              color = ~paleta, fillOpacity = 0.4, group = 'O7') %>%
+  addPolygons(data = orden6, stroke = T, weight = 2,
+              color = ~paleta, fillOpacity = 0.4, group = 'O6') %>%
+  addPolygons(data = orden5, stroke = T, weight = 2,
+              color = ~paleta, fillOpacity = 0.4, group = 'O5') %>%
+  addPolygons(data = orden4, stroke = T, weight = 2,
+              color = ~paleta, fillOpacity = 0.4, group = 'O4') %>% 
+  addPolygons(data = orden3, stroke = T, weight = 2,
+              color = ~paleta, fillOpacity = 0.4, group = 'O3') %>%
+  addPolygons(data = orden2, stroke = T, weight = 2,
+              color = ~paleta, fillOpacity = 0.4, group = 'O2') %>%
+  addPolygons(data = orden1, stroke = T, weight = 2,
+              color = ~paleta, fillOpacity = 0.4, group = 'O1') %>%
+  addPolylines(
+    data = order4326, weight = order4326$strahler*1.5,
+    opacity = 0.7, group = 'str_order') %>%
+  leafem::addHomeButton(extent(order4326), 'Ver todo') %>% 
+  addLayersControl(
+    overlayGroups = c('terrain','O1','O2','O3','O4','05','06','07','str_order'),
+    options = layersControlOptions(collapsed=FALSE))
+cuencas_y_orden_de_red
+cuencas_y_orden_de_red %>% mapview::mapshot(file = 'cuencas_y_orden_de_red_salida.png')
+```
+
+## Estadísticas de red resumidas por orden de red.
+
+
+```{r,eval=FALSE}
+execGRASS(
+  "r.stream.stats",
+  flags = c('overwrite','quiet','o'),
+  parameters = list(
+    stream_rast = 'order-strahler',
+    direction = 'drainage-dir-de-rstr',
+    elevation = 'dem',
+    output = 'ozama_stats.txt'
+  )
+)
+file.show('ozama_stats.txt')
+d <- read.csv("ozama_stats.txt", skip=1, header=TRUE)
+d
+plot(num_of_streams~order, data=d, log="y")
+mod <- lm(log10(num_of_streams)~order, data=d)
+abline(mod)
+text(2, 20, 'logN=2.064-0.544u')
+rb <- 1/10^mod$coefficients[[2]]
+rb
+```
+
+## Estadísticas de red ampliadas
+
+```{r,eval=FALSE}
+execGRASS(
+  "r.stream.stats",
+  flags = c('overwrite','quiet'),
+  parameters = list(
+    stream_rast = 'order-strahler',
+    direction = 'drainage-dir-de-rstr',
+    elevation = 'dem',
+    output = 'ozama_stats_expanded.txt'
+  )
+)
+file.show('ozama_stats_expanded.txt')
+```
+
+## Limpiar archivo de bloqueo del conjunto de mapas de GRASS
+```{r,eval=FALSE}
+rbp <- mean(d$num_of_streams[-length(d$num_of_streams)]/d$num_of_streams[-1])
+rbp
+```
+```{r,eval=FALSE}
+unlink_.gislock()
+```
+
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+### Calcular índices de concavidad y perfiles longitudinales de cursos fluviales
+
+
+```{r,eval=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse=TRUE,
+  eval = T
+)
+options(knitr.duplicate.label = "allow")
+```
+
+```{r,eval=FALSE}
+source(
+  knitr::purl(
+    'orden-de-red.Rmd',
+    output=tempfile()
+  )
+)
+knitr::opts_chunk$set(fig.path = "img/profilesconcav/")
+```
+
+## Imprimir lista de mapas ráster y vectoriales dentro en la región/localización activa
+
+
+```{r,eval=FALSE}
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+
+## Obtener coordenada
+
+```{r,eval=FALSE}
+mapview(order, col.regions = 'blue', legend = FALSE)
+```
+
+## Obtener cursos más largos (cargar función propia)
+```{r,eval=FALSE}
+   {r, results='hide', warning=FALSE, message=FALSE}
+devtools::source_url('https://raw.githubusercontent.com/geofis/rgrass/master/lfp_network.R') #Cargada como función "LfpNetwork"
+LfpNetwork(
+  xycoords = my_trans(c(-69.88117, 18.47503)),
+  suffix = 'ozm',
+  stream_vect = 'order_all',
+  direction = 'drainage-dir-de-rstr'
+)
+```
+
+## Imprimir lista de mapas ráster y vectoriales
+
+```{r,eval=FALSE}
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+
+## Representar con leaflet
+```{r,eval=FALSE}
+
+   {r, results='hide', warning=FALSE, message=FALSE}
+lfp <- readVECT('LfpNetwork_lfp_all_final_ozm')
+```
+
+```{r,eval=FALSE}
+lfp4326 <- spTransform(lfp, CRSobj = CRS("+init=epsg:4326"))
+lfp_con_id <- leaflet() %>%
+  addProviderTiles(providers$Stamen.Terrain, group = 'terrain') %>%
+  addPolylines(
+    data = lfp4326, weight = 3, opacity = 0.7, group = 'order',
+    label = ~as.character(cat),
+    highlightOptions = highlightOptions(color = "white",
+                                      weight = 5, bringToFront = F, opacity = 1),
+    labelOptions = labelOptions(noHide = T,
+                                style = list(
+                                  "font-size" = "8px",
+                                  "background" = "rgba(255, 255, 255, 0.5)",
+                                  "background-clip" = "padding-box",
+                                  "padding" = "1px"))) %>% 
+  leafem::addHomeButton(extent(lfp4326), 'Ver todo') %>% 
+  leafem::addMouseCoordinates() ## Esto es para agregar coordenadas
+lfp_con_id
+lfp_con_id %>% mapview::mapshot(file = 'lfp_con_id_salida.png')
+
+
+
+```
+
+## Exportar a KML
+```{r,eval=FALSE}
+   {r, results='hide', warning=FALSE, message=FALSE}
+execGRASS(
+  'v.out.ogr',
+  flags = c('overwrite','quiet'),
+  parameters = list(
+    input = 'LfpNetwork_lfp_all_final_ozm',
+    output = 'lfp_ozm_kml.kml',
+    format = 'KML',
+    dsco = 'NameField=cat'
+  )
+)
+```
+
+## Obtención de perfiles longitudinales e índices de concavidad
+
+```{r,eval=FALSE}
+   {r, results='hide', warning=FALSE, message=FALSE}
+source('lfp_profiles_concavity.R') #Cargado como función "LfpProfilesConcavity"
+ozama_conv_prof <- LfpProfilesConcavity(
+  xycoords = my_trans(c(-69.88117, 18.47503)),
+  network = 'LfpNetwork_lfp_all_final_ozm',
+  prefix = 'Oz',
+  dem = 'dem',
+  direction = 'drainage-dir-de-rstr',
+  crs = '+init=epsg:32619',
+  smns = 0.5,
+  nrow = 5)
+```
+
+## Mostrar resultados
+
+```{r,eval=FALSE}
+ozama_conv_prof$profiles
+ozama_conv_prof$concavityindex
+ozama_conv_prof$dimensionlessprofiles$layers[[2]]$aes_params$size <- 2
+ozama_conv_prof$dimensionlessprofiles$theme$text$size <- 12
+ozama_conv_prof$dimensionlessprofiles
+```
+
+## Tabla dx/dy, tanto en metros como adimensional. Útiles para construir perfiles por cuenta propia
+
+```{r,eval=FALSE}
+ozama_conv_prof$lengthzdata %>% tibble::as.tibble()
+ozama_conv_prof$lengthzdatadmnls %>% tibble::as.tibble()
+```
+
+
+## Limpiar archivo de bloqueo del conjunto de mapas de GRASS
+
+```{r,eval=FALSE}
+unlink_.gislock()
+```
+
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+### Parámetros de cuenca con r.basin
+```{r,eval=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse=TRUE,
+  fig.path = "img/rbasin/",
+  eval = T
+)
+options(knitr.duplicate.label = "allow")
+```
+
+```{r,eval=FALSE}
+library(rgrass7)
+gisdbase <- 'grass-data-test' #Base de datos de GRASS GIS
+wd <- getwd() #Directorio de trabajo
+wd
+loc <- initGRASS(gisBase = "/usr/lib/grass78/",
+                 home = wd,
+                 gisDbase = paste(wd, gisdbase, sep = '/'),
+                 location = 'c_ozama',
+                 mapset = "PERMANENT",
+                 override = TRUE)
+gmeta()
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+
+## Convertir a números enteros la extensión y la resolución del DEM
+
+```{r,eval=FALSE}
+library(raster)
+rutadem <- 'data/dem.tif'
+rawextent <- extent(raster(rutadem))
+rawextent
+devtools::source_url('https://raw.githubusercontent.com/geofis/rgrass/master/integerextent.R')
+devtools::source_url('https://raw.githubusercontent.com/geofis/rgrass/master/xyvector.R')
+newextent <- intext(e = rawextent, r = 90, type = 'inner')
+newextent
+gdalUtils::gdalwarp(
+  srcfile = 'data/dem.tif',
+  dstfile = 'data/demint.tif',
+  te = xyvector(newextent),
+  tr = c(90,90),
+  r = 'bilinear',
+  overwrite = T
+)
+```
+
+## Importar a sesión de GRASS
+
+```{r,eval=FALSE} 
+   {r, results='hide', warning=FALSE, message=FALSE}
+rutademint <- 'data/demint.tif'
+execGRASS(
+  "g.proj",
+  flags = c('t','c'),
+  georef=rutademint)
+gmeta()
+execGRASS(
+  "r.in.gdal",
+  flags='overwrite',
+  parameters=list(
+    input=rutademint,
+    output="demint"
+  )
+)
+execGRASS(
+  "g.region",
+  parameters=list(
+    raster = "demint",
+    align = "demint"
+  )
+)
+```
+
+```{r,eval=FALSE}
+gmeta()
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+
+## Generar red de drenaje para obtener coordenada posteriormente
+
+```{r,eval=FALSE}
+execGRASS(
+  "r.stream.extract",
+  flags = c('overwrite','quiet'),
+  parameters = list(
+    elevation = 'demint',
+    threshold = 80,
+    stream_raster = 'stream-de-rstr',
+    stream_vector = 'stream_de_rstr'
+  )
+)
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+
+## Obtener coordenada
+```{r,eval=FALSE}
+   {r, results='hide', warning=FALSE, message=FALSE}
+library(sp)
+use_sp()
+library(mapview)
+netw <- spTransform(
+  readVECT('stream_de_rstr'),
+  CRSobj = CRS("+init=epsg:4326"))
+```
+
+```{r,eval=FALSE}
+mapview(netw, col.regions = 'blue', legend = FALSE)
+```
+
+## Transformar coordenada a EPSG:32619 como número entero
+
+```{r,eval=FALSE}
+source('my-trans.R')
+outlet <- as.integer(my_trans(c(-69.88117,18.47503)))
+```
+
+## Ejecutar `r.basin`
+
+```{r,eval=FALSE} 
+    {r, results='hide', warning=FALSE, message=FALSE}
+pref <- 'rbasin_ozama'
+execGRASS(
+  "r.basin",
+  flags = 'overwrite',
+  parameters = list(
+    map = 'demint',
+    prefix = pref,
+    coordinates = outlet,
+    threshold = 80,
+    dir = 'salidas-rbasin/ozama'
+  )
+)
+```
+
+```{r,eval=FALSE}
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+
+> Si `r.basin` arrojara error (sólo en el caso de error, no en caso de advertencia), ejecutar este bloque para borrar las salidas anteriores y reejecutar el `r.basin`:
+```{r, eval=FALSE}
+execGRASS(
+  "g.remove",
+  flags = 'f',
+  parameters = list(
+    type = c('raster','vector'),
+    pattern = paste0(pref, '*')
+  )
+)
+```
+
+## Cargar los vectoriales transformados a EPSG:4326 para visualizar en leaflet
+
+```{r,eval=FALSE}
+    {r, results='hide', warning=FALSE, message=FALSE}
+rbnetw <- spTransform(
+  readVECT('rbasin_ozama_demint_network'),
+  CRSobj = CRS("+init=epsg:4326"))
+rbnetw
+rbmain <- spTransform(
+  readVECT('rbasin_ozama_demint_mainchannel'),
+  CRSobj = CRS("+init=epsg:4326"))
+rbmain
+rbbasin <- spTransform(
+  readVECT('rbasin_ozama_demint_basin'),
+  CRSobj = CRS("+init=epsg:4326"))
+rbbasin
+```
+
+```{r,eval=FALSE}
+library(leaflet)
+leaflet() %>%
+  addProviderTiles(providers$Stamen.Terrain, group = 'terrain') %>%
+  addPolylines(data = rbnetw, weight = 3, opacity = 0.7) %>% 
+  addPolylines(data = rbmain, weight = 3, opacity = 0.7, color = 'red') %>% 
+  addPolygons(data = rbbasin) %>% 
+  leafem::addHomeButton(extent(rbbasin), 'Ver cuenca')
+```
+
+## Explorar los parámetros de cuenca
+
+```{r,eval=FALSE}
+library(readr)
+rbozamapar1 <- read_csv("salidas-rbasin/ozama/rbasin_ozama_demint_parametersT.csv")
+rbozamapar1 %>% tibble::as_tibble()
+rbozamapar2 <- read_csv(
+  "salidas-rbasin/ozama/rbasin_ozama_demint_parameters.csv",
+  skip=2, col_names = c('Parameter', 'Value'))
+rbozamapar2 %>% print(n=Inf)
+```
+
+## Limpiar archivo de bloqueo del conjunto de mapas de GRASS
+
+```{r,eval=FALSE}
+unlink_.gislock()
+```
+
+
+---
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
+### Curva e integral hipsométrica
+
+```{r,eval=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse=TRUE,
+  eval = T
+)
+options(knitr.duplicate.label = "allow")
+```
+
+```{r,eval=FALSE}
+source(
+  knitr::purl(
+    'orden-de-red.Rmd',
+    output=tempfile()
+  )
+)
+knitr::opts_chunk$set(fig.path = "img/hypsocurve/")
+```
+
+## Imprimir lista de mapas ráster y vectoriales dentro en la región/localización activa
+
+
+```{r,eval=FALSE}
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+
+## Representar cuencas
+
+```{r,eval=FALSE}
+    {r, results='hide', warning=FALSE, message=FALSE}
+library(sp)
+use_sp()
+library(mapview)
+bas2 <- readVECT('r_stream_basins_2')
+bas3 <- readVECT('r_stream_basins_3')
+```
+
+## Curva e integral hipsométrica
+
+```{r,eval=FALSE}
+    {r, results='hide', warning=FALSE, message=FALSE}
+source('integral_hypsometric_curve.R') #Cargada como función "HypsoIntCurve"
+HypsoBasinsOrder2 <- HypsoIntCurve(
+  basins = 'r_stream_basins_2',
+  dem = 'dem',
+  labelfield = 'cat',
+  nrow = 2,
+  labelsize = 4
+)
+```
+
+```{r,eval=FALSE}
+HypsoBasinsOrder2$HypsoInt
+HypsoBasinsOrder2$HypsoCurve
+mapview(bas2, zcol='cat', col.regions = 'blue', legend = FALSE) %>%
+  addStaticLabels(label = bas2$cat)
+```
+
+```{r,eval=FALSE}
+    {r, results='hide', warning=FALSE, message=FALSE}
+HypsoBasinsOrder3 <- HypsoIntCurve(
+  basins = 'r_stream_basins_3',
+  dem = 'dem',
+  labelfield = 'cat',
+  nrow = 1,
+  labelsize = 4
+)
+```
+
+```{r,eval=FALSE}
+HypsoBasinsOrder3$HypsoInt
+HypsoBasinsOrder3$HypsoCurve
+mapview(bas3, zcol='cat', col.regions = 'blue', legend = FALSE) %>%
+  addStaticLabels(label = bas3$cat)
+```
+
+## Limpiar archivo de bloqueo del conjunto de mapas de GRASS
+
+```{r,eval=FALSE}
+unlink_.gislock()
+```

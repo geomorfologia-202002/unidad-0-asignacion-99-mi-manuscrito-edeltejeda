@@ -1,0 +1,93 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+### "Extraer una red drenaje con r.stream.extract. Visualizar con leaflet"
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse=TRUE,
+  eval = T
+)
+options(knitr.duplicate.label = "allow")
+```
+
+```{r, include=FALSE}
+source(
+  knitr::purl(
+    'crear-una-cuenca-con-r-water-outlet.Rmd',
+    output=tempfile()
+  )
+)
+knitr::opts_chunk$set(fig.path = "img/extractnet/")
+```
+
+## Mostrar lista nuevamente
+
+```{r}
+execGRASS(
+  'g.list',
+  flags = 't',
+  parameters = list(
+    type = c('raster', 'vector')
+  )
+)
+```
+## Usar la cuenca del Ozama como máscara
+```{r, results='hide'}
+execGRASS(
+  "r.mask",
+  flags = c('verbose','overwrite','quiet'),
+  parameters = list(
+    vector = 'ozama_basin'
+  )
+)
+```
+
+## Extraer la red de drenaje de la cuenca de interés
+```{r}
+execGRASS(
+  "r.stream.extract",
+  flags = c('overwrite','quiet'),
+  parameters = list(
+    elevation = 'dem',
+    threshold = 80,
+    stream_raster = 'ozama-stream-de-rstr',
+    stream_vector = 'ozama_stream_de_rstr'
+  )
+)
+```
+## Traer a R la red de drenaje de la Cuenca Ozama
+
+```{r}
+ozama_net <- readVECT('ozama_stream_de_rstr', ignore.stderr = T)
+ozama_net
+plot(ozama_net)
+ozama_net4326 <- spTransform(ozama_net, CRSobj = CRS("+init=epsg:4326"))
+ozama_net4326
+ozama_centroid <- coordinates(rgeos::gCentroid(ozama_bas4326))
+ozama_centroid
+ozama_net_r <- raster(readRAST('ozama-stream-de-rstr'))
+ozama_net_r
+ozama_net_r3857 <- projectRaster(ozama_net_r, crs = CRS("+init=epsg:3857"), method = 'ngb')
+ozama_net_r3857
+red_de_r_stream <- leaflet() %>% 
+  setView(lng = ozama_centroid[1], lat = ozama_centroid[2], zoom = 10) %>%
+  addProviderTiles(providers$Stamen.Terrain, group = 'terrain') %>%
+  addRasterImage(ozama_net_r3857, opacity = 0.7, method = 'ngb', colors = 'grey20', group = 'str_raster') %>% 
+  addPolylines(data = ozama_net4326, weight = 3, opacity = 0.7, group = 'str_vect') %>% 
+  leafem::addHomeButton(extent(ozama_net4326), 'Ver todo') %>% 
+  addLayersControl(
+    overlayGroups = c('terrain','str_vect','str_raster'),
+    options = layersControlOptions(collapsed=FALSE))
+red_de_r_stream
+red_de_r_stream %>% mapview::mapshot(file = 'red_de_r_stream_salida.png')
+```
+
+## Limpiar archivo de bloqueo del conjunto de mapas de GRASS
+
+```{r}
+unlink_.gislock()
+```

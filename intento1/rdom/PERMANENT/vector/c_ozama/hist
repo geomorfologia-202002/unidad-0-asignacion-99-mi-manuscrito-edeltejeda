@@ -1,0 +1,8 @@
+COMMAND: v.in.ogr --quiet input="/home/edelte/unidad-0-asignacion-99-mi-manuscrito-edeltejeda/grass-data-test/rdom/PERMANENT/.tmp/rstudio-ubuntu-s-1vcpu-2gb-nyc3-01/460.0.gpkg" layer="c_ozama" output="c_ozama" min_area=0.0001 type="" snap=-1
+GISDBASE: /home/edelte/unidad-0-asignacion-99-mi-manuscrito-edeltejeda/grass-data-test
+LOCATION: rdom MAPSET: PERMANENT USER: edelte DATE: Mon Oct 26 19:31:56 2020
+-----------------------------------------------------
+1 input polygons
+Total area: 2.73819E+09 (1 areas)
+Overlapping area: 0 (0 areas)
+Area without category: 0 (0 areas)

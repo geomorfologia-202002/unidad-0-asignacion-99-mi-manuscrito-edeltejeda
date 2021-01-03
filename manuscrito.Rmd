@@ -1,33 +1,30 @@
 ---
-# output: github_document
-output: 
-  pdf_document:
-    keep_tex: true
-    fig_caption: true
-    latex_engine: pdflatex
-    template: svm-latex-ms.tex
-    number_sections: true
-title: | 
-        | Mi playa
-        | Subtítulo
-        | Subtítulo
+title: |
+  | Mi playa
+  | Subtítulo
+  | Subtítulo
 author:
-- name: Tali tali tali
-  affiliation: Estudiante, Universidad Autónoma de Santo Domingo (UASD)
-abstract: "Mi resumen"
-keywords: "palabra clave 1, palabra clave 2"
+- affiliation: Estudiante, Universidad Autónoma de Santo Domingo (UASD)
+  name: Tali tali tali
 date: "`r format(Sys.time(), '%B %d, %Y')`"
-geometry: margin=1in
+output:
+  pdf_document:
+    fig_caption: yes
+    keep_tex: yes
+    latex_engine: pdflatex
+    number_sections: yes
+    template: svm-latex-ms.tex
+  html_document:
+    df_print: paged
+bibliography: bibliography.bib
 fontfamily: mathpazo
 fontsize: 11pt
-# spacing: double
-bibliography: bibliography.bib
-# csl: plos-one.csl
-csl: apa.csl
-header-includes:
-  \usepackage{pdflscape}
-  \newcommand{\blandscape}{\begin{landscape}}
+geometry: margin=1in
+header-includes: \usepackage{pdflscape} \newcommand{\blandscape}{\begin{landscape}}
   \newcommand{\elandscape}{\end{landscape}}
+keywords: palabra clave 1, palabra clave 2
+csl: apa.csl
+abstract: Mi resumen
 ---
 
 # Introducción
