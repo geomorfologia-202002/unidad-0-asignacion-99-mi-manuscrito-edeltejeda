@@ -92,7 +92,7 @@
 
 \title{Análisis de Geomorfométria Fluvial, Aplicado a la Cuenca Ozama,
 Republica Dominicana, Utilizando Tecnología Geoespacial de Código
-Abierto (Open Source)  }
+Abierto.  }
 
 
 
@@ -148,7 +148,7 @@ Espacial, Universidad Autónoma de Santo Domingo (UASD))},
              pdfkeywords = {geomorfología de cuenca, cuenca Ozama, cuenca hidrográfica},  
             pdftitle={Análisis de Geomorfométria Fluvial, Aplicado a la Cuenca Ozama,
 Republica Dominicana, Utilizando Tecnología Geoespacial de Código
-Abierto (Open Source)},
+Abierto.},
             colorlinks=true,
             citecolor=blue,
             urlcolor=blue,
@@ -205,17 +205,28 @@ Espacial, Universidad Autónoma de Santo Domingo (UASD)}
 
     \vskip 8.5pt % \small 
 
-\noindent La geomorfología a través de una de sus ramas llamada geomorfología
-fluvial se encarga especialmente del estudio de la red y la cuenca con
-múltiples fines, desatando la prevención de inundaciones y el uso
-sustentable de la misma. La cuenta Ozama situada al centro-sur de la
-Republica Dominicana es idónea para la realización de distintos estudios
-morfométricos por tener zonas de vida, áreas protegidas y zonas de uso
-urbano. Los estudios de este tipo aplicados a esta cuenca son escasos o
-inexistentes, este trabajo aporta nuevos conocimientos sobre los
-parámetros morfométricos de la cuenca y su red de drenaje. Todo el flujo
-de trabajo se efectuó en un ambiente de software de código abierto lo
-que permitirá replicar este estudio sin ningún costo.
+\noindent Los estudios de morfometría de cuencas fluviales son insumos ideales
+para la prevención de inundaciones y uso sustentable de cuencas. No
+obstante, en República Dominicana son escasos y, los pocos que existen,
+son poco representativos. La cuenca del río Ozama, situada al centro-sur
+de la Republica Dominicana, es idónea para la realización de este tipo
+de estudios, por tratarse de un mosaico relativamente grande de zonas de
+vida, áreas protegidas y suelo urbano. En el presente artículo, se
+presentan algunas informaciones existentes sobre la cuenca Ozama de sus
+aspectos morfométricos, geológicos y productos cartográficos obtenidos
+de diversas fuentes públicas y privadas, procesadas con algoritmos (de
+código abierto)de morfometría fluvial dentro de un ambiente de
+programación estadística. Por medio de estos algoritmos de código
+abierto y utilizando como insumo el MERIT-DEM, con la finalidad de
+aportar conocimeintos nuevos sobre la cuenca Ozama, se realizó un
+análisis hortoniano de la red de drenaje del Ozama, así como de los
+perfiles longitudinales e índices de concavidad de los cursos más
+largos. Adicionalmente, se realizó una delimitación de la cuenca y de
+sus subcuencas, se obtuvieron los parámetros morfométricos principales y
+se propusieron interpretaciones a posibles eventos de reorganización del
+drenaje. Finalmente, se exploraron las fortalezas y debilidades del
+MERIT-DEM, así como de los algoritmos empleados, en la caracterización
+morfométrica de la cuenca Ozama.
 
 
 \vskip 8.5pt \noindent \emph{Keywords}: geomorfología de cuenca, cuenca Ozama, cuenca hidrográfica \par
@@ -242,8 +253,8 @@ cuenca.
 
 Una cuenca hidrográfica es una unidad morfológica que está delimitada de
 forma natural en donde sus aguas superficiales convergen hacia un lecho
-fluvial, y por medio de una red de cauces principales fluyen al
-mar(Gaspari, Rodríguez Vagaría, Senisterra, Delgado, \& Besteiro, 2013).
+fluvial, y por medio de una red de cauces principales fluyen al mar
+(Gaspari, Rodríguez Vagaría, Senisterra, Delgado, \& Besteiro, 2013).
 
 Los estudios morfométricos de cuencas y redes de drenaje, aportan
 conocimiento sobre el comportamiento morfodinámico e hidrológico,
@@ -251,9 +262,10 @@ contribuyendo así al diseño informado de medidas de prevención en
 escenarios de abundantes precipitaciones, así como a la planificación
 del uso sustentable de la misma (Domínguez et al., 2003). Por otra parte
 Arriaga-Cabrera et al. (2009) resalta que el estudio de una cuenca es un
-avance para las políticas de administración sustentable porque en la
-actualidad no existen estudios que explique el comportamiento hídrico y
-morfométrico que permitan determinar y predecir su dinámica.
+avance para las políticas de administración sustentable, sobre todo en
+el contexto actual, donde no existen estudios que explique el
+comportamiento hídrico y morfométrico que permitan determinar y predecir
+su dinámica.
 
 La cuenca del río Ozama, situada al sur-centro del República Dominicana,
 es idónea para distintos estudios, dado que es una cuenca modelo por
@@ -263,17 +275,18 @@ donde interactúan diferentes tipos de flora y fauna; 2) Se han declarado
 varias áreas protegidas dentro de la cuenca; 3) Una parte importante de
 su superficie incluye terrenos destinados para uso urbano, pero con
 preencia también destacada de la agricultura y la ganadería
-(Medio-Ambiente, 2012). Si bien se trata de una cuenca importante para
-el país y para el entorno urbano, su escasa instrumentación impone retos
-añadidos al conocimiento de sus procesos específicos. Sin embargo, con
-las técnicas y la información de elevación disponibles actualmente, es
+(Medio-Ambiente, 2012); 4) No dispone de estudios publicados sobre su
+morfometría. Si bien se trata de una cuenca importante para el país y
+para el entorno urbano, su escasa instrumentación impone retos añadidos
+al conocimiento de sus procesos específicos. Sin embargo, con las
+técnicas y la información de elevación disponibles actualmente, es
 posible profundizar en el conocimiento de esta cuenca mediante estudios
 morfométricos aplicados a geomorfología fluvial utilizando herramientas
 de bajo costo.
 
-En la Republica dominicana los estudios de geomorfología fluvial son
+En la Republica Dominicana, los estudios de geomorfología fluvial son
 escasos y dispersos. La cuenca del río Ozama no escapa a esta realidad,
-y sólo cuenta con estudios generales y, aunque existe información
+y sólo cuenca con estudios generales y, aunque existe información
 geológica, no existen análisis morfométricos de la misma. Este trabajo
 aporta nuevo conocimiento sobre la red de drenaje del Ozama (e.g.~orden
 de red, análisis hortoniano, análisis de cursos más largos para
@@ -284,12 +297,13 @@ de código abierto (\emph{open source}), y se generaron productos
 mediante \emph{script} reproducible, lo que permitirá replicar este
 estudio sin ningún costo.
 
-Es una cuenca importante pero poco instrumentada, la exploración visual
-de la misma revela patrones que despiertan la curiosidad. Concretamente,
-la cuenca del río Ozama tiene una forma peculiar (e.g.~de perímetro muy
-rectilíneo), y su red de drenaje presenta unas características bastante
-llamativas (e.g.~cursos de largo desarrollo, perfiles de elevación muy
-variables).
+La exploración visual de las fuentes cartográficas existentes previas a
+la realización del presente estudio, reveló patrones de la cuenca que
+ameritan interpretación. Concretamente, la cuenca tiene una forma
+peculiar (e.g.~de perímetro muy rectilíneo desdibujando patrón
+geométrico regular), y su red de drenaje presenta unas características
+bastante llamativas (e.g.~cursos de largo desarrollo, perfiles de
+elevación muy variables).
 
 En este sentido, interesa conocer cuáles son los controles que explican
 su morfología, por qué determinados sectores de la misma presentan
@@ -297,19 +311,16 @@ evidencia preliminar de procesos de reorganización del drenaje y, en su
 caso, formular una o varias hipótesis que expliquen estos fenómenos.
 Comúnmente, la morfometría de cuenca deja señales inequívocas
 (e.g.~hipsometría) con las cuales interpretar posibles controles
-litológicos y estructurales. La caracterización de la red de drenaje
-definida por el método de Horton resalta la existencia (si los hubiere)
-de patrones en el orden de red y en la forma de las redes de drenaje
-según sus órdenes. Si la cuenca Ozama llegara a presentar algún patrón,
-conoceremos de qué factores o elementos dependen.
+litológicos y estructurales.
 
-Según Horton (1945) comúnmente la razón de bifurcación es constante para
-todos los órdenes de red de una cuenca. Uno de los objetivos es
-determinar si este fenómeno ocurre en nuestra cuenca de estudio y si
-difiere la razón de bifurcación calculada por medio de coeficientes de
-regresión, de la creada por el promedio de las razones de bifurcación de
-cada par de órdenes de red, tratando de explicar las grandes diferencias
-que puedan surgir.
+Igualmente, por medio de exploración visual, se clasifican las distintas
+formas de la red Ozama, utilizando tipologías ampliamente reconocidas en
+estudios morfométricos Pedraza Gilsanz (1996), y se interpretan posibles
+factores explicativos en cada caso.\\
+Según Horton (1945), comúnmente la razón de bifurcación es constante
+para todos los órdenes de red de una cuenca. En el presenta estudio, se
+calcula la razón de bifurcación con el objetivo de determinar si este
+fenómeno ocurre en la cuenca del río Ozama.
 
 La configuración espacial resultado de los análisis aplicados a los
 perfiles longitudinales y los índices de concavidad de los cursos más
@@ -321,8 +332,7 @@ reorganización del drenaje.
 
 \section{Metodología}\label{metodologuxeda}
 
-Para responder las preguntas de investigación, en este estudio se
-recopilaron datos de elevación, conocimiento de terreno y productos
+Se recopilaron datos de elevación, conocimiento de terreno y productos
 cartográficos, todos referidos a la cuenca del río Ozama y su entorno.
 Dichas fuentes fueron procesadas con algoritmos de morfometría fluvial
 dentro de un ambiente de programación estadística, para obtener las
@@ -335,15 +345,16 @@ cuadrados, se encuentra ubicada entre las coordendas geográficas de
 18º58'30.393" N y 18º23'40.846" N latitud norte y 70º16'5.369" W y
 69º24'27.891" W longitud oeste (Medio-Ambiente, 2012). Por su tamaño, es
 la cuarta cuenca mas grande de la República Dominicana, y en cuanto a
-longitud de curso más largo es la TERCERA (Gutiérrez, 2014). Según
+longitud de curso más largo es la tercera (Gutiérrez, 2014). Según
 Medio-Ambiente (2012), el río nace en la Loma Palo Bonito (loma Siete
-Cabezas), la cual forma parte de la sierra de Yamasa. (Ver figura
-\ref{fig:ubi-indrhi})
+Cabezas), la cual forma parte de la sierra de Yamasa (Ver figura
+\ref{fig:ubi-indrhi}).
 
 \begin{figure}
 \centering
 \includegraphics[width=0.75000\textwidth]{Productos Generados/Mapa Final_page-0001.jpg}
-\caption{\label{fig:ubi-indrhi}Ubicacion cuenca Ozama}
+\caption{\label{fig:ubi-indrhi}Límites de la cuenca del río Ozama y red
+hidrográfica principal (INDRHI) (n.d.)}
 \end{figure}
 
 Cubre el área geomórfica de la Llanura Costera del Caribe, incluyendo
@@ -356,47 +367,69 @@ montañosa de Los Haitises, con una superficie de
 compuesto por materiales sedimentarios, diversos arrecifes, grava,
 conglomerado (tipo Santo Domingo en La Romana), calizas grises tipo
 Hatillo, sedimentos aluviales de lagos oceánicos en cauces fluviales,
-terrazas planicies aluviales y valles (Medio-Ambiente, 2012).
+terrazas planicies aluviales y valles (Medio-Ambiente, 2012), (Ver
+figura \ref{fig:geo_}).
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75000\textwidth]{Productos Generados/Cuenca_Mapa_Geologico.png}
+\caption{\label{fig:geo_}Mapa geolólico de la cuenca Ozama}
+\end{figure}
 
 \subsection{Fuentes de datos y
 métodos}\label{fuentes-de-datos-y-muxe9todos}
 
-Para el estudio y análisis de la cuenca Ozama, se calcularon sus
-parámetros morfométricos, abarcando aspectos de los atributos de la red
-y de la cuenca. Todos los cálculos se efectuaron utilizando el flujo de
-trabajo de semiprocesamiento automático usando GRASS GIS en R (José
-Ramón Martínez Batlle, 2020), a través del paquete rgrass7 (Bivand,
-2019; Martínez Batlle, 2020).
+Los parámetros morfométricos se calcularon abarcando aspectos de los
+atributos de la red y de la cuenca. Los cálculos se efectuaron en GRASS
+GIS desde R, usando el paquete rgrass7 (Bivand, 2019), siguiendo el
+flujo de trabajo de semiprocesamiento automático propuesto por José
+Ramón Martínez Batlle (2020).
 
 Se utilizó un modelo digital de elevación (DEM) espacial existente
 (SRTM3 v2.1 y AW3D-30m v1), mejorado con el algoritmo \emph{Multi-Error
-Removed Improved Terrain (MERIT)}, el cual eliminó y corrigió los
-errores de orientación absoluta, ruido de rayas, ruido de moteado y
-orientación de altura de árbol (Yamazaki, 2018). Este MERIT DEM fue
-descargado del sitio web de Dai YAMAZAKI's
-(\url{http://hydro.iis.u-tokyo.ac.jp/~yamadai} ). También se utilizaron
-multiples complementos de GRASS GIS para calcular los parámetros
-morfométricos, entre los que destacan \texttt{r.watershed},
-\texttt{r.stream*} and \texttt{r.basin} (Martínez Batlle, 2020).
+Removed Improved Terrain (MERIT)}, el cual elimina y corrige los errores
+de orientación absoluta, ruido de rayas, ruido de moteado y orientación
+de altura de árbol (Yamazaki, 2018). Este MERIT DEM fue descargado del
+sitio web de Dai YAMAZAKI's
+(\url{http://hydro.iis.u-tokyo.ac.jp/~yamadai}).
 
-El flujo de trabajo consistió en crear región y localización de GRASS
-tomando como referencia la extensión y el sistema de coordenadas del
-DEM. Posteriormente, se generaron el límite de la cuenca utilizando el
-complemento de GRASS \texttt{r.water.outlet}.
+El DEM, proyectado en UTM (EPSG:32619), fue introducido al flujo de
+trabajo en GRASS GIS. Las propiedades de la región de trabajo se
+hicieron coincidir con aquellas del DEM (e.g.~resolución, extensión). A
+continuación, se calcularon parámetros hidrográficos básicos
+(e.g.~acumulación y dirección de flujo), con la función
+\texttt{r.watershed} (Ehlschlaeger, 1989), utilizando un umbral de
+acumulación de flujo de 80 celdas y sin utilizar rellenado de
+depresiones (fill sink).Obtenido el mapa de dirección de flujo y la
+coordenada de la desembocadura del curso principal de la cuenca, se
+generó la cuenca de drenaje con el addon de GRASS GIS
+\texttt{r.water.outlet} (Ehlschlaeger, 1989), adicional a esto con
+\texttt{r.stream.extract} (Holmgren, 1994), se extrajo otra red de
+drenaje a partir de un DEM enmascarado, es decir se extrajo de un área
+previamente delimitada por el (INDRHI) (n.d.).
 
 Para obtener los cursos más largos de la cuenca Ozama y los cursos más
-largo de sus cuencas tributarias así como sus perfiles de
-longitudinales, sus índices de concavidad y sus curvas hipsométricas se
-ejecutaron una serie de scrits, que forman parte de la guía creada por
-Martínez Batlle (2020).
+largo de sus cuencas tributarias así como sus perfiles longitudinales,
+sus índices de concavidad y sus curvas hipsométricas se requirieron la
+creación de varios mapas y estadísticas con la ejecución una serie de
+scripts: 1) mapa de dirección de flujo (\texttt{r.stream*}), (Jasiewicz
+\& Metz, 2011); 2) mapa de orden red (\texttt{r.stream.order}),(Drwal,
+1982); 3) un mapa de cuencas según órdenes de red
+(\texttt{r.stream.basins}), (Jasiewicz \& Metz, 2011), por los métodos
+de Strahler y Horton; 4) estadística resumidas por órdenes de red y la
+razón de bifurcación (\texttt{r.stream.stats}), (Horton, 1945), (GRASS
+Development Team, 2017).
 
 \section{Resultados}\label{resultados}
 
-Una vez finalizada la ejecución de los algoritmos de medición de
-morfología fluvial, se obtuvieron una serie de informaciónes que
-ayudarán a dar respuesta a las preguntas de investigaciones y a
-comprender los detalles de los parámetros geomorfológicos de la Cuenca
-de Ozama.
+Se presentan los parámetros morfométricos y topográficos de la cuenca
+del río Ozama. A continuación, se resumen las principales
+características morfométricas de la red hidrográfica, a partir del
+análisis de su orden de red y su razón de bifurcación. Posteriormente,
+los perfiles longitudinales e índices de concavidad son analizados en
+seis partes para su mejor compresión. Finalmente son detallados los
+parámetros morfométricos y el curso más largo de la cuenca Ozama
+obtenidos con el addon \texttt{r.basin*}.
 
 \subsection{Delimitación y Forma}\label{delimitaciuxf3n-y-forma}
 
@@ -407,21 +440,8 @@ INDRHI, cuyos valores de área y perímetro fueron de
 2,740,km\textsuperscript{2} y 300,km, respectivamente. En cuanto a
 forma, la cuenca extraída en este estudio se extiende hacia el este
 sobrepasando, por mucho, los límites de la cuenca del INDRHI (Ver figura
-\ref{fig:delimitacioncuencaindrhi} y 2).
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75000\textwidth]{Productos Generados/Cuenca_forma1.jpeg}
-\caption{\label{fig:delimitacioncuencaindrhi}Delimitacion Cuenca Rio
-Ozama (INDRHI)}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75000\textwidth]{Productos Generados/Cuenca_p_forma1.jpeg}
-\caption{\label{fig:delimitacioncuencaindrhi}Delimitacion Cuenca Rio
-Ozama}
-\end{figure}
+\ref{fig:3_n_1}). La delimitación de la cuenca Ozama, al observarla,
+podemos decir que forma una figura trapezoidal.
 
 \subsection{Datos de Elevación y
 Pendiente}\label{datos-de-elevaciuxf3n-y-pendiente}
@@ -429,43 +449,31 @@ Pendiente}\label{datos-de-elevaciuxf3n-y-pendiente}
 La cuenca del río Ozama alcanza como elevación maxima aprox. 900 metros
 sobre el nivel del mar, con promedio de 110 metros, mediana en 60 metros
 y un valor minimo de 0 metros con fuerte sesgo a la derecha (Ver figura
-\ref{fig:hist1}). Esto implica que la mayor parte de las elevaciones de
-la cuenca del rio ozama son bajas.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75000\textwidth]{Productos Generados/Histograma-de-elevaciones.png}
-\caption{\label{fig:hist1}Histograma de elevaciones}
-\end{figure}
+\ref{fig:3_n_1}). Esto implica que la mayor parte de las elevaciones de
+la cuenca del río Ozama son bajas.
 
 La pendiente máxima de la cuenca del río Ozama es de aproximadamente 45
 grados, la pendiente promedio es de 37 grados, la mediana es de 20
-grados y la mínima es de 0 grados (Ver figura \ref{fig:hist2}). La
-cuenca ozama cuenta con pendientes que desde el punto de vista
+grados y la mínima es de 0 grados (Ver figura \ref{fig:3_n_1}). La
+cuenca ozama cuenca con pendientes que desde el punto de vista
 agropecuario se corresponden a los mejores suelos para su
 aprovechamiento mientras que los procesos erosivos y los movimientos de
 masas son menores.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.75000\textwidth]{Productos Generados/slope.jpeg}
-\caption{\label{fig:hist2}Histograma de pendiente}
+\includegraphics[width=1.00000\textwidth]{Productos Generados/3_en_1.jpg}
+\caption{\label{fig:3_n_1}Cuenca del río Ozama. (a) Perímetro; (b) y (c)
+histogramas de la elevación y la pendiente.}
 \end{figure}
 
-\subsection{Red de Dranaje, Orden de red y análisis
+\subsection{Red de dranaje, orden de red y análisis
 hortoniano}\label{red-de-dranaje-orden-de-red-y-anuxe1lisis-hortoniano}
 
 Partiendo de su cauce principal se generó la red de drenaje de la cuenca
-del rio Ozama (Ver figura \ref{fig:drenaje}), la cual tiene un orden de
-red mínimo de 1 y un máximo de 7, según el método de Horton aplicado
-para determinar su grado de ramificación (Horton, 1945) (Ver figura
-\ref{fig:C_O}).
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75000\textwidth]{Productos Generados/Red_drenaje_ozama.png}
-\caption{\label{fig:drenaje}Red de drenaje de la cuenca Ozama}
-\end{figure}
+del rio Ozama, la cual tiene un orden de red mínimo de 1 y un máximo de
+7, según el método de Horton aplicado para determinar su grado de
+ramificación (Horton, 1945) (Ver figura \ref{fig:C_O}).
 
 \begin{figure}
 \centering
@@ -473,22 +481,18 @@ para determinar su grado de ramificación (Horton, 1945) (Ver figura
 \caption{\label{fig:C_O}Cuenca Ozama y su red de drenaje}
 \end{figure}
 
-\subsubsection{Razón de bifurcación promedio para cada par de ordenes de
-red}\label{razuxf3n-de-bifurcaciuxf3n-promedio-para-cada-par-de-ordenes-de-red}
-
-Aplicando el addon de GRASS GIS \texttt{r.stream.stats} se obtuvieron
-las estadísticas por orden de red, esta muestra que la cuenca del rio
-Ozama tiene 1,328 cursos fluviales de orden 1, 274 de orden 2, 63 de
-orden 3, 13 de orden 4, 5 de orden 5, 2 de orden 6 y 1 de orden 7. La
-razón de bifurcación para el par de ordenes 1-2 es 1,328/274=4.846, para
-el par 2-3 es 274/63=4.349, para el par 3-4 es 63/13=4.846, para el par
-4-5 es 13/5=2.600, para el par 5-6 es 5/2=2.500, para el par 6-7 es
-2/1=1. El valor promedio sería Rb=3.523679 (Ver Tabla \ref{tab:tabla}).
-
-\newpage   
+La cuenca del rio Ozama tiene 1,328 cursos fluviales de orden 1, 274 de
+orden 2, 63 de orden 3, 13 de orden 4, 5 de orden 5, 2 de orden 6 y 1 de
+orden 7. La razón de bifurcación para el par de órdenes 1-2 es
+1,328/274=4.846, para el par 2-3 es 274/63=4.349, para el par 3-4 es
+63/13=4.846, para el par 4-5 es 13/5=2.600, para el par 5-6 es
+5/2=2.500, para el par 6-7 es 2/1=1. El valor promedio sería Rb=3.523679
+(Ver Tabla \ref{tab:tabla}). La razón de bifurcación obtenida por medio
+de la pendiente de la recta fue de Rb=3.361632 (Ver figura
+\ref{fig:Rb_R}).
 
 \begin{longtable}[]{@{}cc@{}}
-\caption{Ordenes de red con sus repectivos cursos
+\caption{Órdenes de red con sus repectivos cursos
 fluviales\label{tab:tabla}}\tabularnewline
 \toprule
 Orden & No. de Cursos\tabularnewline
@@ -508,18 +512,11 @@ Orden & No. de Cursos\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsubsection{Razón de bifurcación calculada por medio de coeficientes
-de
-regresión}\label{razuxf3n-de-bifurcaciuxf3n-calculada-por-medio-de-coeficientes-de-regresiuxf3n}
-
-Ya obtenido el numero de cursos fluviales y el modelo generado con
-dichos datos se creo la pendiente de la recta para calcular la razon de
-bifurcación, obteniendo como resultado Rb=3.361632 (Ver figura
-\ref{fig:Rb_R}).
+\newpage
 
 \begin{figure}
 \centering
-\includegraphics[width=0.75000\textwidth]{Productos Generados/Orden_red_regresion.png}
+\includegraphics[width=0.75000\textwidth]{Productos Generados/recta_regresion.png}
 \caption{\label{fig:Rb_R} Recta de regresión para el modelo ``numero de
 curso fluviales en función del orden de red'' y ecuación
 correspondiente}
@@ -529,12 +526,9 @@ correspondiente}
 Concavidad}\label{perfiles-longitudinales-e-uxedndices-de-concavidad}
 
 La complejidad de la Cuenca Ozama obligo a que este análisis se
-dividiera en seis partes, estas se corresponden a subcuentas que se
+dividiera en seis partes, estas se corresponden a subcuencas que se
 definieron para abarcar todos los perfiles longitudinales con sus
 valores de concavidad.
-
-\subsubsection{Subcuenta Principal Rio
-Ozama}\label{subcuenta-principal-rio-ozama}
 
 Los perfiles longitudinales de los cursos fluviales que drenan la
 subcuenca principal Rio Ozama, presentan características similares,
@@ -552,59 +546,12 @@ cinco (5) y abarcan los perfiles rectilíneos (Ver figura
 perfiles longitudinales cóncavos son muy pronunciados y los más
 frecuentes en la subcuenca principal Rio Ozama.
 
-\begin{figure}
-\centering
-\includegraphics[width=0.65000\textwidth]{Productos Generados/Perfil1.png}
-\caption{\label{fig:LFP_Ozama0} Subcuenta principal Rio Ozama}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=1.00000\textwidth]{Productos Generados/perfiles_adimensionales_indices_de_concavidad.jpeg}
-\caption{\label{fig:LFP_Ozama1} Perfiles Longitudinales e Indices de
-Concavidad de la subcuenta principal Rio Ozama}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=1.00000\textwidth]{Productos Generados/perfiles_todos_juntos.jpeg}
-\caption{\label{fig:LFP_Ozama2} Todos los Perfiles de elevación de la
-subcuenta principal Rio Ozama}
-\end{figure}
-
-\newpage
-
-\subsubsection{Subcuenca Rio Yabacao}\label{subcuenca-rio-yabacao}
-
-En la subcuenca Rio Yacao al igual que en la subcuenca principal del Rio
-Ozama, los patrones de perfiles rectilíneos, concavidad perfecta,
-perfiles convexos y los perfiles de sifones están presentes, predominado
-de entre ellos los perfiles cóncavos.(Ver figura \ref{fig:LFP_yabacao0},
-\ref{fig:LFP_yabacao1} y \ref{fig:LFP_yabacao2}).
-
-\begin{figure}
-\centering
-\includegraphics[width=0.65000\textwidth]{Productos Generados/p_yabacao.png}
-\caption{\label{fig:LFP_yabacao0} Subcuenta Rio Yabacao}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=1.00000\textwidth]{Productos Generados/p_c_yabacao.png}
-\caption{\label{fig:LFP_yabacao1} Perfiles Longitudinales e Indices de
-Concavidad de la subcuenta Rio Yabacao}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_yabacao_todos.png}
-\caption{\label{fig:LFP_yabacao2} Todos los Perfiles de elevación de la
-subcuenta principal Rio Yabacao}
-\end{figure}
-
-\newpage
-
-\subsubsection{Subcuenca Arroyo Ocoa}\label{subcuenca-arroyo-ocoa}
+El analisis de la subcuenca Rio Yacao al igual que en la subcuenca
+principal del Rio Ozama, los patrones de perfiles rectilíneos,
+concavidad perfecta, perfiles convexos y los perfiles de sifones están
+presentes, predominado de entre ellos los perfiles cóncavos.(Ver figura
+\ref{fig:LFP_yabacao0}, \ref{fig:LFP_yabacao1} y
+\ref{fig:LFP_yabacao2}).
 
 Los perfiles LFP que drenan el Arroyo Ocoa muestran un patrón rectilíneo
 predominante. Presentan claramente tres patrones, uno formado por
@@ -612,82 +559,16 @@ perfiles convexos con meseta en cabecera, perfiles rectilíneos y una
 gran cantidad de sifones.(Ver figura \ref{fig:LFP_ocoa0},
 \ref{fig:LFP_ocoa1} y \ref{fig:LFP_ocoa2}).
 
-\begin{figure}
-\centering
-\includegraphics[width=0.60000\textwidth]{Productos Generados/p_Ocoa.png}
-\caption{\label{fig:LFP_ocoa0} Subcuenta Arroyo Ocoa}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.85000\textwidth]{Productos Generados/p_c_ocoa1.png}
-\caption{\label{fig:LFP_ocoa1} Perfiles Longitudinales e Indices de
-Concavidad de la subcuenta Arroyo Ocoa}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_ocoa.png}
-\caption{\label{fig:LFP_ocoa2} Todos los Perfiles de elevación de la
-subcuenca Arroyo Ocoa}
-\end{figure}
-
-\subsubsection{Subcuenca Rio La Savita}\label{subcuenca-rio-la-savita}
-
 Con altura máxima de aproximadamente 500 metros, la subcuenca Rio La
 Savita, posee perfiles longitudinales cóncavos predominantes, así como
 perfiles de concavidad perfecta y en cantidades muy mínimas presenta
 sifones y mesetas en cabeceras. (Ver figura \ref{fig:LFP_Savita0},
 \ref{fig:LFP_Savita1} y \ref{fig:LFP_Savita2}).
 
-\begin{figure}
-\centering
-\includegraphics[width=0.65000\textwidth]{Productos Generados/p_Savita.png}
-\caption{\label{fig:LFP_Savita0} Subcuenta Rio La Savita}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_savita1.png}
-\caption{\label{fig:LFP_Savita1} Perfiles Longitudinales e Indices de
-Concavidad de la subcuenta Rio La Savita}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_savita.png}
-\caption{\label{fig:LFP_Savita2} Todos los Perfiles de elevación de la
-subcuenta principal Rio Savita}
-\end{figure}
-
-\subsubsection{Subcuenca Arroyo Yuca}\label{subcuenca-arroyo-yuca}
-
 Los perfiles longitudinales que drenan el Arroyo Yuca presentan dos
 grupos de patrones, el cóncavo y el rectilíneo. Destacándose más los
 perfiles cóncavos.(Ver figura \ref{fig:LFP_Yuca0}, \ref{fig:LFP_Yuca1} y
 \ref{fig:LFP_Yuca2}).
-
-\begin{figure}
-\centering
-\includegraphics[width=0.65000\textwidth]{Productos Generados/p_yuca.png}
-\caption{\label{fig:LFP_Yuca0} Subcuenta Arroyo Yuca}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_yuca1.png}
-\caption{\label{fig:LFP_Yuca1} Perfiles Longitudinales e Indices de
-Concavidad de la subcuenta Arroyo Yuca}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_yuca.png}
-\caption{\label{fig:LFP_Yuca2} Todos los Perfiles de elevación de la
-subcuenta Arroyo Yuca}
-\end{figure}
-
-\subsubsection{Subcuenca Rio Isabela}\label{subcuenca-rio-isabela}
 
 Los perfiles cóncavos están muy presentes en la sucuenca del Rio
 Isabela, evidencia de esto, es la presencia de una gran cantidad de
@@ -698,28 +579,159 @@ cabeceras poco pronunciadas.(Ver figura \ref{fig:LFP_Isabela0},
 
 \begin{figure}
 \centering
+\includegraphics[width=0.65000\textwidth]{Productos Generados/Perfil1.png}
+\caption{\label{fig:LFP_Ozama0} Subcuenca principal Rio Ozama}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=1.00000\textwidth]{Productos Generados/perfiles_adimensionales_indices_de_concavidad.jpeg}
+\caption{\label{fig:LFP_Ozama1} Perfiles Longitudinales e Indices de
+Concavidad de la subcuenca principal Rio Ozama}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=1.00000\textwidth]{Productos Generados/perfiles_todos_juntos.jpeg}
+\caption{\label{fig:LFP_Ozama2} Todos los Perfiles de elevación de la
+subcuenca principal Rio Ozama}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.65000\textwidth]{Productos Generados/p_yabacao.png}
+\caption{\label{fig:LFP_yabacao0} Subcuenca Rio Yabacao}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=1.00000\textwidth]{Productos Generados/p_c_yabacao.png}
+\caption{\label{fig:LFP_yabacao1} Perfiles Longitudinales e Indices de
+Concavidad de la subcuenca Rio Yabacao}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_yabacao_todos.png}
+\caption{\label{fig:LFP_yabacao2} Todos los Perfiles de elevación de la
+subcuenca principal Rio Yabacao}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.60000\textwidth]{Productos Generados/p_Ocoa.png}
+\caption{\label{fig:LFP_ocoa0} Subcuenca Arroyo Ocoa}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.85000\textwidth]{Productos Generados/p_c_ocoa1.png}
+\caption{\label{fig:LFP_ocoa1} Perfiles Longitudinales e Indices de
+Concavidad de la subcuenca Arroyo Ocoa}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_ocoa.png}
+\caption{\label{fig:LFP_ocoa2} Todos los Perfiles de elevación de la
+subcuenca Arroyo Ocoa}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.65000\textwidth]{Productos Generados/p_Savita.png}
+\caption{\label{fig:LFP_Savita0} Subcuenca Rio La Savita}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_savita1.png}
+\caption{\label{fig:LFP_Savita1} Perfiles Longitudinales e Indices de
+Concavidad de la subcuenca Rio La Savita}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_savita.png}
+\caption{\label{fig:LFP_Savita2} Todos los Perfiles de elevación de la
+subcuenca principal Rio Savita}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.65000\textwidth]{Productos Generados/p_yuca.png}
+\caption{\label{fig:LFP_Yuca0} Subcuenca Arroyo Yuca}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_yuca1.png}
+\caption{\label{fig:LFP_Yuca1} Perfiles Longitudinales e Indices de
+Concavidad de la subcuenca Arroyo Yuca}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_yuca.png}
+\caption{\label{fig:LFP_Yuca2} Todos los Perfiles de elevación de la
+subcuenca Arroyo Yuca}
+\end{figure}
+
+\begin{figure}
+\centering
 \includegraphics[width=0.65000\textwidth]{Productos Generados/p_isabela.png}
-\caption{\label{fig:LFP_Isabela0} Subcuenta Rio Isabela}
+\caption{\label{fig:LFP_Isabela0} Subcuenca Rio Isabela}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_isabela1.png}
 \caption{\label{fig:LFP_Isabela1} Perfiles Longitudinales e Indices de
-Concavidad de la subcuenta Rio Isabela}
+Concavidad de la subcuenca Rio Isabela}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=0.75000\textwidth]{Productos Generados/p_c_isabela.png}
 \caption{\label{fig:LFP_Isabela2} Todos los Perfiles de elevación de la
-subcuenta Rio Isabela}
+subcuenca Rio Isabela}
 \end{figure}
 
 \newpage
 
-\subsection{Curso mas largo de la
-cuenca}\label{curso-mas-largo-de-la-cuenca}
+\subsection{\texorpdfstring{Parámetros de la cuenca Ozama con
+\texttt{r.basin*}}{Parámetros de la cuenca Ozama con r.basin*}}\label{paruxe1metros-de-la-cuenca-ozama-con-r.basin}
+
+El scrit (\texttt{r.basin*}) genero múltiples parámetros de la cuenca
+Ozama que mostraremos de manera resumida (Ver Tabla \ref{tab:tabla2}).
+
+\begin{longtable}[]{@{}cc@{}}
+\caption{Parámetros de la cuenca Ozama generados con
+\texttt{r.basin*}\label{tab:tabla2}}\tabularnewline
+\toprule
+Parámetros de la cuenca Ozama & Valores\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Parámetros de la cuenca Ozama & Valores\tabularnewline
+\midrule
+\endhead
+Centroide UTM & 413955, 2069865\tabularnewline
+Área de la cuenca Ozama (~km\textsuperscript{2}) & 3,400\tabularnewline
+Perímetro (km) & 360\tabularnewline
+Elevación máxima (m) & 900\tabularnewline
+Elevación mínima (m) & 0\tabularnewline
+Elevación media (m) & 110\tabularnewline
+Pendiente media (m) & 4\tabularnewline
+Max order (Strahler) & 7\tabularnewline
+No. de curso fluviales & 1,615\tabularnewline
+Frecuencia de curso fluvial de primer orden & 0.321559552\tabularnewline
+Razón Bifurcación (Horton) & 3.3679\tabularnewline
+Razón de longitud (Horton) & 1.6319\tabularnewline
+Razón área (Horton) & 3.6528\tabularnewline
+Razón pendiente (Horton) & 1.3764\tabularnewline
+\bottomrule
+\end{longtable}
 
 Loma Rancho de Yagua-Loma Palo Bonito, allí nace el Ozama, o al menos
 allí se enraíza su curso más largo, desembocando en el Mar Caribe (Ver
@@ -735,13 +747,16 @@ figura \ref{fig:c_m_l}).
 
 \section{Discusión}\label{discusiuxf3n}
 
-A partir de los hallazgos encontrados, se observa de manera visual dos
-posibles codos de captura, a) Uno ubicada al este de Piedra y al norte
-de Esperalvillo, existiendo probabilidad de que el curso fluvial más
-largo del Ozama drenara sus aguas hacia los Haitises; b) el segundo es
-el En curso fluvial que sale de Sabana Grande de Boya hacia el Rio
-Ozama, pudiendo este en el pasado drenar sus aguas en el Rio Camú, o en
-algún otro rio del noreste de la Isla de Santo Domingo.
+A partir de los hallazgos encontrados, todos los objetivos planteados en
+este artículo fueron logrados. Al observar de manera visual la
+morfometría de la cuenca Ozama, presenta evidencias de procesos de
+reorganización del drenaje, determinamos que existen dos posibles codos
+de captura, a) Uno ubicada al este de Piedra y al norte de Esperalvillo,
+existiendo probabilidad de que el curso fluvial más largo del Ozama
+drenara sus aguas hacia los Haitises; b) el segundo es el En curso
+fluvial que sale de Sabana Grande de Boya hacia el Rio Ozama, pudiendo
+este en el pasado drenar sus aguas en el Rio Camú, o en algún otro rio
+del noreste de la Isla de Santo Domingo.
 
 Al superponer la Cuenca Ozama generada con el Mapa Geológico Nacional,
 en las zonas donde están estos posibles codos de capturas, predominan
@@ -772,12 +787,22 @@ inferior, dicho resultado siempre será constante entre un orden y otro
 (Horton, 1945). Las razones de bifurcación calculada para los pares de
 órdenes de red 4-5, y 5-6, de la Cuenca Ozama no se ajustan al criterio
 planteado por Horton, debido a que estas varían con valores que van
-desde 1 a 2. La guía elaborada por Martínez Batlle (2020) explica que la
-razón de bifurcación calculada por los métodos de coeficientes de
-regresión y por el promedio de las razones de bifurcación de cada par de
-órdenes de red, difieren en sus resultados, esto fue comprobado para la
-razón de bifurcación calculada a la Cuenca Ozama por ambos métodos, sin
-embargo el error resultante es un valor muy pequeño.
+desde 1 a 2. La guía elaborada por José Ramón Martínez Batlle (2021)
+explica que la razón de bifurcación calculada por los métodos de
+coeficientes de regresión y por el promedio de las razones de
+bifurcación de cada par de órdenes de red, difieren en sus resultados,
+esto fue comprobado para la razón de bifurcación calculada a la Cuenca
+Ozama por ambos métodos, sin embargo el error resultante es un valor muy
+pequeño.
+
+Para concluir, este trabajo de investigación se ha interesado
+principalmente en conocer aspectos generales de la morfometría fluvial
+de la cuenca Ozama, sin embargo, los hallazgos que se han presentado,
+requieren que se inicien nuevas investigaciones para profundizar en
+temas en específicos como por ejemplo a lo relacionado con su
+reordenamiento del drenaje. Investigaciones que en la Republica
+Dominicana son escasas o no existen, como ya se había mencionado
+anteriormente.
 
 \section{\texorpdfstring{\emph{Script}
 reproducible}{Script reproducible}}\label{script-reproducible}
@@ -922,8 +947,8 @@ también}\label{para-completar-importar-un-mapa-vectorial-tambiuxe9n}
 \end{Highlighting}
 \end{Shaded}
 
-\section{\texorpdfstring{title: ``Calcular parámetros hidrográficos con
-r.watershed. Visualizar con
+\subsection{\texorpdfstring{title: ``Calcular parámetros hidrográficos
+con r.watershed. Visualizar con
 leaflet''}{title: Calcular parámetros hidrográficos con r.watershed. Visualizar con leaflet}}\label{title-calcular-paruxe1metros-hidrogruxe1ficos-con-r.watershed.-visualizar-con-leaflet}
 
 \begin{Shaded}
@@ -1047,8 +1072,8 @@ hubiere}\label{limpiar-archivo-de-bloqueo-del-conjunto-de-mapas-de-grass.-quitar
 \end{Highlighting}
 \end{Shaded}
 
-\subsubsection{Extraer una cuenca de drenaje con r.water.outlet.
-Visualizar con mapview y
+\subsection{Extraer una cuenca de drenaje con r.water.outlet. Visualizar
+con mapview y
 leaflet}\label{extraer-una-cuenca-de-drenaje-con-r.water.outlet.-visualizar-con-mapview-y-leaflet}
 
 \begin{Shaded}
@@ -1170,7 +1195,7 @@ hubiere}\label{limpiar-archivo-de-bloqueo-del-conjunto-de-mapas-de-grass.-quitar
 \end{Highlighting}
 \end{Shaded}
 
-\subsubsection{\texorpdfstring{``Extraer una red drenaje con
+\subsection{\texorpdfstring{``Extraer una red drenaje con
 r.stream.extract. Visualizar con
 leaflet''}{Extraer una red drenaje con r.stream.extract. Visualizar con leaflet}}\label{extraer-una-red-drenaje-con-r.stream.extract.-visualizar-con-leaflet}
 
@@ -1283,7 +1308,7 @@ GRASS}\label{limpiar-archivo-de-bloqueo-del-conjunto-de-mapas-de-grass}
 \end{Highlighting}
 \end{Shaded}
 
-\subsubsection{``Orden de red, morfometría y análisis hortoniano usando
+\subsection{``Orden de red, morfometría y análisis hortoniano usando
 r.stream*"}\label{orden-de-red-morfometruxeda-y-anuxe1lisis-hortoniano-usando-r.stream}
 
 \begin{Shaded}
@@ -1297,7 +1322,7 @@ r.stream*"}\label{orden-de-red-morfometruxeda-y-anuxe1lisis-hortoniano-usando-r.
 \end{Highlighting}
 \end{Shaded}
 
-\subsection{\#}\label{section}
+\subsection{}\label{section}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1396,7 +1421,7 @@ red}\label{crear-mapas-de-uxf3rdenes-de-red}
 \subsection{Visualizar la red con
 leaflet}\label{visualizar-la-red-con-leaflet}
 
-\subsubsection{Simbología única}\label{simbologuxeda-uxfanica}
+\subsection{Simbología única}\label{simbologuxeda-uxfanica}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1428,7 +1453,7 @@ leaflet}\label{visualizar-la-red-con-leaflet}
 \end{Highlighting}
 \end{Shaded}
 
-\subsubsection{Simbología aplicando grosor según orden de
+\subsection{Simbología aplicando grosor según orden de
 red}\label{simbologuxeda-aplicando-grosor-seguxfan-orden-de-red}
 
 \begin{Shaded}
@@ -1453,7 +1478,7 @@ red}\label{simbologuxeda-aplicando-grosor-seguxfan-orden-de-red}
 \subsection{Delimitar cuencas según orden de red de
 Strahler}\label{delimitar-cuencas-seguxfan-orden-de-red-de-strahler}
 
-\subsubsection{Obtener órdenes de red mínimo y
+\subsection{Obtener órdenes de red mínimo y
 máximo}\label{obtener-uxf3rdenes-de-red-muxednimo-y-muxe1ximo}
 
 \begin{Shaded}
@@ -1477,7 +1502,7 @@ máximo}\label{obtener-uxf3rdenes-de-red-muxednimo-y-muxe1ximo}
 \end{Highlighting}
 \end{Shaded}
 
-\subsubsection{Delimitar cuencas, convertirlas de ráster a
+\subsection{Delimitar cuencas, convertirlas de ráster a
 vectorial}\label{delimitar-cuencas-convertirlas-de-ruxe1ster-a-vectorial}
 
 \begin{Shaded}
@@ -1509,7 +1534,7 @@ vectorial}\label{delimitar-cuencas-convertirlas-de-ruxe1ster-a-vectorial}
 \end{Highlighting}
 \end{Shaded}
 
-\subsubsection{Representar las cuencas con
+\subsection{Representar las cuencas con
 leaflet}\label{representar-las-cuencas-con-leaflet}
 
 \begin{Shaded}
@@ -1620,8 +1645,8 @@ GRASS}\label{limpiar-archivo-de-bloqueo-del-conjunto-de-mapas-de-grass-1}
 \end{Highlighting}
 \end{Shaded}
 
-\subsubsection{Calcular índices de concavidad y perfiles longitudinales
-de cursos
+\subsection{Calcular índices de concavidad y perfiles longitudinales de
+cursos
 fluviales}\label{calcular-uxedndices-de-concavidad-y-perfiles-longitudinales-de-cursos-fluviales}
 
 \begin{Shaded}
@@ -1784,8 +1809,8 @@ concavidad}\label{obtenciuxf3n-de-perfiles-longitudinales-e-uxedndices-de-concav
 \end{Shaded}
 
 \subsection{Tabla dx/dy, tanto en metros como adimensional. Útiles para
-construir perfiles por cuenta
-propia}\label{tabla-dxdy-tanto-en-metros-como-adimensional.-uxfatiles-para-construir-perfiles-por-cuenta-propia}
+construir perfiles por cuenca
+propia}\label{tabla-dxdy-tanto-en-metros-como-adimensional.-uxfatiles-para-construir-perfiles-por-cuenca-propia}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1803,7 +1828,7 @@ GRASS}\label{limpiar-archivo-de-bloqueo-del-conjunto-de-mapas-de-grass-2}
 \end{Highlighting}
 \end{Shaded}
 
-\subsubsection{Parámetros de cuenca con
+\subsection{Parámetros de cuenca con
 r.basin}\label{paruxe1metros-de-cuenca-con-r.basin}
 
 \begin{Shaded}
@@ -2073,7 +2098,7 @@ GRASS}\label{limpiar-archivo-de-bloqueo-del-conjunto-de-mapas-de-grass-3}
 \end{Highlighting}
 \end{Shaded}
 
-\subsubsection{Curva e integral
+\subsection{Curva e integral
 hipsométrica}\label{curva-e-integral-hipsomuxe9trica}
 
 \begin{Shaded}
@@ -2204,10 +2229,10 @@ tropical basin}.
 Batlle, J. R. M. (2020, September). Introducción a r. Retrieved from
 \url{https://geofis.shinyapps.io/tutorial1/}
 
-\hypertarget{ref-bivand2019rgrass7}{}
-Bivand, R. (2019). \emph{Rgrass7: Interface between grass 7 geographical
-information system and r}. Retrieved from
-\url{https://CRAN.R-project.org/package=rgrass7}
+\hypertarget{ref-jose_ramon_martinez_batlle_2021_4425878}{}
+Batlle, J. R. M. (2021). geomorfologia-master/unidad-4-asignacion-1
+-procesos-fluviales: Let's map (Version v0.0.0.9000).
+\url{https://doi.org/10.5281/zenodo.4425878}
 
 \hypertarget{ref-dominguez2003analisis}{}
 Domínguez, F. M., Ch, A. G.-T., Gómez-Tagle, A. F., Perla, C.,
@@ -2216,10 +2241,26 @@ con sistemas de información geográfica, una herramienta para el manejo
 de cuencas. \emph{Instituto de Investigaciones Sobre Los Recursos
 Naturales. Morelia, México}.
 
+\hypertarget{ref-drwal1982wyksztalcenie}{}
+Drwal, J. (1982). \emph{Wykształcenie i organizacja sieci
+hydrograficznej jako podstawa oceny struktury odpływu na terenach
+młodoglacjalnych}. Uniwersytet Gdański.
+
+\hypertarget{ref-ehlschlaeger1989using}{}
+Ehlschlaeger, C. R. (1989). Using the a\^{} t search algorithm to
+develop hydrologic models from digital elevation data. \emph{Proceedings
+of the international geographic information system (igis) symposium,
+baltimore, md}, 275--281.
+
 \hypertarget{ref-gaspari2013elementos}{}
 Gaspari, F., Rodríguez Vagaría, A., Senisterra, G., Delgado, M. I., \&
 Besteiro, S. (2013). \emph{Elementos metodológicos para el manejo de
 cuencas hidrográficas}.
+
+\hypertarget{ref-GRASS_GIS_software}{}
+GRASS Development Team. (2017). \emph{Geographic resources analysis
+support system (grass gis) software, version 7.2}. Retrieved from
+\url{http://grass.osgeo.org}
 
 \hypertarget{ref-gutierrez2008geomorfologia}{}
 Gutiérrez Elorza, M. (2008). \emph{Geomorfología}.
@@ -2229,15 +2270,23 @@ Gutiérrez, W. (2014). \emph{Recopilación documental de informaciones
 relacionadas con la cuenca, calidad de sus aguas, el saneamiento y
 rehabilitación del rio ozama}.
 
+\hypertarget{ref-holmgren1994multiple}{}
+Holmgren, P. (1994). Multiple flow direction algorithms for runoff
+modelling in grid based elevation models: An empirical evaluation.
+\emph{Hydrological Processes}, \emph{8}(4), 327--334.
+
 \hypertarget{ref-horton1945erosional}{}
 Horton, R. E. (1945). Erosional development of streams and their
 drainage basins; hydrophysical approach to quantitative morphology.
 \emph{Geological Society of America Bulletin}, \emph{56}(3), 275--370.
 
-\hypertarget{ref-pelempito12020}{}
-Martínez Batlle, J. R. (2020, March). Canal de youtube pelempito1.
-geomorfología (geo114), licenciatura en geografía, uasd. Retrieved from
-\url{https://www.youtube.com/watch?v=9F7BIAUNvRY/\&list=PLDcT2n8UzsCSt1-NnUQ8anwHhmouFr0Kv}
+\hypertarget{ref-institutonacionalderecursoshidraulicos}{}
+(INDRHI), I. N. D. R. H. (n.d.).
+
+\hypertarget{ref-jasiewicz2011new}{}
+Jasiewicz, J., \& Metz, M. (2011). A new grass gis toolkit for hortonian
+analysis of drainage networks. \emph{Computers \& Geosciences},
+\emph{37}(8), 1162--1173.
 
 \hypertarget{ref-medioambiente}{}
 Medio-Ambiente. (2012). Ozama. Retrieved from

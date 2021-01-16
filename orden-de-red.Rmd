@@ -252,7 +252,7 @@ d
 plot(num_of_streams~order, data=d, log="y")
 mod <- lm(log10(num_of_streams)~order, data=d)
 abline(mod)
-text(2, 20, 'logN=2.064-0.544u')
+text(2, 20, 'logN=3.4597-0.5266u')
 rb <- 1/10^mod$coefficients[[2]]
 rb
 ```
